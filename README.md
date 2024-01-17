@@ -25,3 +25,11 @@
 - Connor Nelson
 
 ### Tools Used:
+
+
+<!-- MARKDOWN LINKS & IMAGES  -->  
+  
+[contributors-shield]: https://img.shields.io/github/contributors/DSDouglas/Integrated-Library-System 
+[contributors-url]: https://github.com/DSDouglas/Integrated-Library-System/graphs/contributors  
+[commit-shield]: https://img.shields.io/github/last-commit/DSDouglas/Integrated-Library-System 
+[pypi-shield]: https://img.shields.io/pypi/pyversions/iconsdk
