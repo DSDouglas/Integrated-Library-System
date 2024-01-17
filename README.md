@@ -5,7 +5,7 @@
 
 <br />  
 <div align="center">  
-    <h1 align="center">Integrated-Library-System /h1>  
+    <h1 align="center">Integrated-Library-System 
 </div>  
   
   
