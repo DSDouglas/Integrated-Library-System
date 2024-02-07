@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+
+<table id="book-data-table" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Author</th>
+            <th scope="col">Available</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th scope="row">1</th>
+            <td><a href="https://en.wikipedia.org/wiki/Blood_Meridian">Blood Meridian</a></td>
+            <td><a href="https://en.wikipedia.org/wiki/Cormac_McCarthy">Cormac Mcarthy</a></td>
+            <td>No</td>
+        </tr>
+        <tr>
+            <th scope="row">2</th>
+            <td><a href="https://en.wikipedia.org/wiki/The_Hobbit">The Hobbit</a></td>
+            <td><a href="https://en.wikipedia.org/wiki/J._R._R._Tolkien">J.R.R. Tolkein</a></td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <th scope="row">3</th>
+            <td><a href="https://en.wikipedia.org/wiki/Do_Androids_Dream_of_Electric_Sheep%3F">Do Androids Dream of
+                    Electric Sheep</a></td>
+            <td><a href="https://en.wikipedia.org/wiki/Philip_K._Dick">Philip K. Dick</a></td>
+            <td>No</td>
+        </tr>
+    </tbody>
+</table>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    $(document).ready(function () {
+        $('#book-data-table').DataTable();
+    });
+</script>
+{% endblock %}
