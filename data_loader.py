@@ -25,8 +25,8 @@ class DataMover:
             self.connection = pymysql.connect(
                 host='localhost',
                 user='root',
-                password='Noelle0718',
-                database='librarysystem'
+                password='yourpass',
+                database='yourdatabase'
             )
         except pymysql.MySQLError as error:
             print(f"Failed to connect to the database: {error}")
