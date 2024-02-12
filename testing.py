@@ -83,11 +83,16 @@ def main():
                         action = input("Select an action (1-4): ")
 
                         if action == "1":
-                            librarian.create_patron()
+                            name = input("Enter patron's name: ")
+                            user_id = input("Enter patron's user ID: ")
+                            password = input("Enter patron's password: ")
+                            librarian.create_patron(name, user_id, password)
                         elif action == "2":
-                            librarian.check_out_book()
+                            isbn = input("Enter the ISBN of the book to check out: ")
+                            librarian.check_out_book(isbn)
                         elif action == "3":
-                            librarian.check_in_book()
+                            isbn = input("Enter the ISBN of the book to check in: ")
+                            librarian.check_in_book(isbn)
                         elif action == "4":
                             break
                         else:

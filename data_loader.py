@@ -165,12 +165,9 @@ class DataMover:
         # Return False if no match is found
         return False
 
-
-    def create_patron(self):
+    def create_patron(self, name, user_id, password):
         # Prompt the user to enter patron credentials
-        name = input("Enter patron's name: ")
-        user_id = input("Enter patron's user ID: ")
-        password = input("Enter patron's password: ")
+
         try:
 
             # Connect to the database and check if user_id exists
@@ -215,8 +212,7 @@ class DataMover:
 
             print("Patron created successfully! (Added to failed connections)")
 
-    def check_out_book(self):
-        isbn = input("Enter the ISBN of the book to check out: ")
+    def check_out_book(self, isbn):
         try:
 
             # Connect to the database and change the status
@@ -252,8 +248,7 @@ class DataMover:
             except FileNotFoundError:
                 print("Book checked out successfully! (Added to failed connections)")
 
-    def check_in_book(self):
-        isbn = input("Enter the ISBN of the book to check in: ")
+    def check_in_book(self, isbn):
         try:
             # Connect to the database and change the status
             self.connect_to_database()
