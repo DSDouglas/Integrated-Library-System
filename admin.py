@@ -1,28 +1,10 @@
 from user import User
-from data_loader import DataMover
 
 
 class Admin(User):
-    def __init__(self, name, user_id, password, checkout_limit=4):
-        super().__init__(name, user_id, password)
-        self._checkout_limit = checkout_limit
-        self.data_mover = DataMover()
-
-    def create_patron(self, name, user_id, password):
-        self.data_mover.create_patron(name, user_id, password)
-
-    def check_out_book(self, isbn):
-        self.data_mover.check_out_book(isbn)
-
-    def check_in_book(self, isbn):
-        self.data_mover.check_in_book(isbn)
-
-    def get_checkout_limit(self):
-        return self._checkout_limit
-
-    def checkout_limit(self, checkout_limit):
-        self._checkout_limit = int(checkout_limit)
+    def __init__(self, first_name, last_name, email, user_id, password):
+        super().__init__(first_name, last_name, email, user_id, password)
 
     def __str__(self):
-        return f"Admin(name={self.name}, user_id={self.user_id}, password={self.password}," \
-               f"checkout_limit={self.checkout_limit}) "
+        return f"Admin(first_name={self.get_first_name()}, last_name={self.get_last_name()}, " \
+               f"email={self.get_email()}, user_id={self.get_user_id()}, password={self.get_password()})"

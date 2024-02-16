@@ -1,9 +1,15 @@
-Book,BookTitle,BookAuthor,2022,BookPublisher,Fiction,1234567890,False
-Book,BookTitle,BookAuthor,2022,BookPublisher,Fiction,1234567890,False,False
-Book,BookTitle,BookAuthor,2022,BookPublisher,Fiction,1234567890,False,False
-Book,BookTitle,BookAuthor,2022,BookPublisher,Fiction,1234567890,False,False
-Book,BookTitle,BookAuthor,2022,BookPublisher,Fiction,1234567890,False,False
-Book,BookTitle,BookAuthor,2022,BookPublisher,Fiction,1234567890,False,False
-Book,BookTitle,BookAuthor,2022,BookPublisher,Fiction,1234567890,False,False
-Book,BookTitle,BookAuthor,2022,BookPublisher,Fiction,1234567890,False,False
-Book,BookTitle,BookAuthor,2022,BookPublisher,Fiction,1234567890,False,False
+Book,BookTitle1,BookAuthor1,2023,BookPublisher1,Science Fiction,2345678901,,,,False,0.0,False
+Book,BookTitle2,BookAuthor2,2024,BookPublisher2,Mystery,3456789012,,,,False,0.0,False
+Book,BookTitle3,BookAuthor3,2025,BookPublisher3,Thriller,4567890123,,,,False,0.0,False
+Book,BookTitle4,BookAuthor4,2026,BookPublisher4,Romance,5678901234,,,,False,0.0,False
+Book,BookTitle5,BookAuthor5,2027,BookPublisher5,Non-Fiction,6789012345,,,,False,0.0,False
+Book,BookTitle1,BookAuthor1,2023,BookPublisher1,Science Fiction,2345678901,,,,False,0.0,False
+Book,BookTitle2,BookAuthor2,2024,BookPublisher2,Mystery,3456789012,,,,False,0.0,False
+Book,BookTitle3,BookAuthor3,2025,BookPublisher3,Thriller,4567890123,,,,False,0.0,False
+Book,BookTitle4,BookAuthor4,2026,BookPublisher4,Romance,5678901234,,,,False,0.0,False
+Book,BookTitle5,BookAuthor5,2027,BookPublisher5,Non-Fiction,6789012345,,,,False,0.0,False
+Book,BookTitle1,BookAuthor1,2023,BookPublisher1,Science Fiction,2345678901,,,,False,0.0,False
+Book,BookTitle2,BookAuthor2,2024,BookPublisher2,Mystery,3456789012,,,,False,0.0,False
+Book,BookTitle3,BookAuthor3,2025,BookPublisher3,Thriller,4567890123,,,,False,0.0,False
+Book,BookTitle4,BookAuthor4,2026,BookPublisher4,Romance,5678901234,,,,False,0.0,False
+Book,BookTitle5,BookAuthor5,2027,BookPublisher5,Non-Fiction,6789012345,,,,False,0.0,False
