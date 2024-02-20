@@ -22,7 +22,8 @@
         <script type="text/javascript"
                 charset="utf8"
                 src="//cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-        {% block head %}{% endblock head %}
+        {% block head %}
+        {% endblock head %}
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -41,14 +42,16 @@
                     <a class="nav-link active" href="{% url 'index' %}">Home <span class="sr-only"></span></a>
                 </div>
                 <div class="navbar-nav">
-                    <a class="nav-link active" href="{% url 'books' %}">Books<span class="sr-only"></span></a>
+                    <a class="nav-link active" href="{% url 'catalog' %}">Catalog<span class="sr-only"></span></a>
                 </div>
                 <div class="navbar-nav">
                     <a class="nav-link active" href="{% url 'login' %}">Login<span class="sr-only"></span></a>
                 </div>
             </div>
         </nav>
-        {% block content %}{% endblock content %}
+        {% block content %}
+        {% endblock content %}
     </body>
-    {% block script %}{% endblock script %}
+    {% block script %}
+    {% endblock script %}
 </html>
