@@ -31,7 +31,9 @@
                 <td>
                     <a href="https://en.wikipedia.org/wiki/J._R._R._Tolkien">J.R.R. Tolkein</a>
                 </td>
-                <td>Yes</td>
+                <td>
+                    <button>Yes</button>
+                </td>
             </tr>
             <tr>
                 <th scope="row">3</th>
@@ -46,11 +48,11 @@
             </tr>
         </tbody>
     </table>
-{% endblock %}
+{% endblock content %}
 {% block script %}
     <script>
     $(document).ready(function () {
         $('#book-data-table').DataTable();
     });
     </script>
-{% endblock %}
+{% endblock script %}
