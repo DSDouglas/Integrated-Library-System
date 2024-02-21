@@ -28,7 +28,7 @@ class DataMover:
             self.connection = pymysql.connect(
                 host='localhost',
                 user='root',
-                password='N',
+                password='yourpass',
                 database='librarysystem'
             )
         except pymysql.MySQLError as error:
@@ -77,6 +77,7 @@ class DataMover:
                 isbn BIGINT,
                 user_id VARCHAR(255),
                 on_hold BOOLEAN,
+                hold_end DATE,
                 checkout_date DATE,
                 due_date DATE,
                 fee BOOLEAN,

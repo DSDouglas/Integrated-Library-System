@@ -1,4 +1,5 @@
 import datetime
+import pymysql
 
 
 class Book:
@@ -15,6 +16,7 @@ class Book:
         self._fee = False
         self._fee_amount = 0.0
         self._on_hold = False
+        self._hold_end = None
 
     def get_title(self):
         return self._title
@@ -87,12 +89,30 @@ class Book:
         self._fee_amount = fee_amount
         self.update_table()
 
+    def get_hold_end(self):
+        return self._hold_end
+
+    def hold_end(self, hold_end):
+        self._hold_end = hold_end
+        self.update_table()
+
     def get_on_hold(self):
         return self._on_hold
 
     def on_hold(self, on_hold):
+        if on_hold:
+            # Set hold_end to 3 days from today
+            hold_end_date = datetime.date.today() + datetime.timedelta(days=3)
+            self.hold_end(hold_end_date)
+        else:
+            # Clear hold_end when on_hold is set to False
+            self.hold_end(None)
         self._on_hold = on_hold
         self.update_table()
+
+    def calculate_hold_expiry(self):
+        if self._hold_end and datetime.date.today() > self._hold_end:
+            self.on_hold(False)
 
     def check_out(self):
         self._checkout_date = datetime.date.today()
@@ -102,8 +122,47 @@ class Book:
         self.update_table()
 
     def update_table(self):
-        pass
-        # This method will be called whenever any attribute of the book changes
+        try:
+            # Connect to the database
+            connection = pymysql.connect(
+                host='localhost',
+                user='root',
+                password='yourpass',
+                database='librarysystem'
+            )
+
+            with connection.cursor() as cursor:
+                # Update the Book entry in the database
+                update_query = """
+                UPDATE Book
+                SET
+                    user_id = %s,
+                    checkout_date = %s,
+                    due_date = %s,
+                    fee = %s,
+                    fee_amount = %s,
+                    on_hold = %s,
+                    hold_end = %s
+                WHERE isbn = %s
+                """
+
+                cursor.execute(update_query, (
+                    self._user_id,
+                    self._checkout_date,
+                    self._due_date,
+                    self._fee,
+                    self._fee_amount,
+                    self._on_hold,
+                    self._hold_end,
+                    self._isbn
+                ))
+
+            # Commit the changes and close the connection
+            connection.commit()
+            connection.close()
+
+        except pymysql.MySQLError as error:
+            print(f"Failed to connect to the database: {error}")
 
     def calculate_fee(self):
         if self._due_date and datetime.date.today() > self._due_date:
