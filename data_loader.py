@@ -44,7 +44,7 @@ class DataMover:
         # SQL statements for creating tables
         table_queries = [
             """CREATE TABLE IF NOT EXISTS Admin (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                admin_id INT AUTO_INCREMENT PRIMARY KEY,
                 firstname VARCHAR(255),
                 lastname VARCHAR(255),
                 email VARCHAR(255),
@@ -52,7 +52,7 @@ class DataMover:
                 password VARCHAR(255)
             )""",
             """CREATE TABLE IF NOT EXISTS Librarian (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                librarian_id INT AUTO_INCREMENT PRIMARY KEY,
                 firstname VARCHAR(255),
                 lastname VARCHAR(255),
                 email VARCHAR(255),
@@ -60,7 +60,7 @@ class DataMover:
                 password VARCHAR(255)
             )""",
             """CREATE TABLE IF NOT EXISTS Patron (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                patron_id INT AUTO_INCREMENT PRIMARY KEY,
                 firstname VARCHAR(255),
                 lastname VARCHAR(255),
                 email VARCHAR(255),
@@ -68,7 +68,7 @@ class DataMover:
                 password VARCHAR(255)
             )""",
             """CREATE TABLE IF NOT EXISTS Book (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                book_id INT AUTO_INCREMENT PRIMARY KEY,
                 title VARCHAR(255),
                 author VARCHAR(255),
                 pub_year YEAR,
