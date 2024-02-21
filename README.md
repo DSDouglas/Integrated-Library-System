@@ -15,6 +15,13 @@
 # Table of Contents:  
 - [Introduction](#introduction)  
 - [Contributors](#contributors)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Database Setup](#database-setup)
+- [Functionalities](#functionalities)
+- [File Structure](#file-structure)
+
+
 
   ## Introduction
 
@@ -27,16 +34,6 @@ The Library Management System is a Python-based project designed to handle vario
 - Connor Nelson
 
 
-
-
-
-## Table of Contents
-
-- [Installation](#installation)
-- [Usage](#usage)
-- [Database Setup](#database-setup)
-- [Functionalities](#functionalities)
-- [File Structure](#file-structure)
 
 ## Installation
 
