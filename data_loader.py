@@ -28,7 +28,7 @@ class DataMover:
             self.connection = pymysql.connect(
                 host='localhost',
                 user='root',
-                password='yourpass',
+                password='Noelle0718',
                 database='librarysystem'
             )
         except pymysql.MySQLError as error:
@@ -100,13 +100,20 @@ class DataMover:
         for instance in class_instances:
             # Get the name of the class (table) of the current instance
             table_name = instance.__class__.__name__
-            # Get the names of the attributes (columns) of the instance
-            columns = ', '.join(instance.__dict__.keys())
+
+            # Get the names of the attributes (columns) of the instance without underscores
+            columns = ', '.join(column.lstrip('_') for column in instance.__dict__.keys())
+
             # Convert attribute values to strings for the SQL query
             values = ', '.join(
-                f"'{value}'" if isinstance(value, str) else str(value) for value in instance.__dict__.values())
-            # Construct the SQL insert query
+                f"NULL" if value is None else f"'{value}'" if isinstance(value, str) else str(value)
+                for value in instance.__dict__.values()
+            )
+
+            # Construct the SQL insert query without underscores in column names
             query = f"INSERT INTO {table_name} ({columns}) VALUES ({values})"
+            print("query", query)
+
             # Execute the insert query using the cursor
             cursor.execute(query)
 

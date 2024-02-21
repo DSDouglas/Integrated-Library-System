@@ -3,10 +3,10 @@ import pymysql
 
 
 class Book:
-    def __init__(self, title, author, date_published, publisher, genre, isbn):
+    def __init__(self, title, author, pub_year, publisher, genre, isbn):
         self._title = str(title)
         self._author = str(author)
-        self._date_published = int(date_published)
+        self._pub_year = int(pub_year)
         self._publisher = str(publisher)
         self._genre = str(genre)
         self._isbn = int(isbn)
@@ -30,11 +30,11 @@ class Book:
     def author(self, author):
         self._author = str(author)
 
-    def get_date_published(self):
-        return self._date_published
+    def get_put_year(self):
+        return self._pub_year
 
-    def date_published(self, date_published):
-        self._date_published = int(date_published)
+    def pub_year(self, pub_year):
+        self._pub_year= int(pub_year)
 
     def get_publisher(self):
         return self._publisher
@@ -127,7 +127,7 @@ class Book:
             connection = pymysql.connect(
                 host='localhost',
                 user='root',
-                password='yourpass',
+                password='Noelle0718',
                 database='librarysystem'
             )
 
@@ -176,7 +176,7 @@ class Book:
 
     def __str__(self):
         return f"Book(title={self.get_title()}, author={self.get_author()}," \
-               f" date_published={self.get_date_published()}, " \
+               f" date_published={self.get_put_year()}, " \
                f"publisher={self.get_publisher()}, genre={self.get_genre()}, ISBN={self.get_isbn()}, " \
                f"user_id={self.get_user_id()}, checkout_date={self.get_checkout_date()}, " \
                f"due_date={self.get_due_date()}, " \

@@ -1,22 +1,22 @@
 class User:
     def __init__(self, firstname, last_name, email, user_id, password):
         self._firstname = str(firstname)
-        self._last_name = str(last_name)
+        self._lastname = str(last_name)
         self._email = str(email)
         self._user_id = str(user_id)
         self._password = str(password)
 
-    def get_first_name(self):
+    def get_firstname(self):
         return self._firstname
 
-    def first_name(self, first_name):
+    def firstname(self, first_name):
         self._firstname = str(first_name)
 
-    def get_last_name(self):
-        return self._last_name
+    def get_lastname(self):
+        return self._lastname
 
     def last_name(self, last_name):
-        self._last_name = str(last_name)
+        self._lastname = str(last_name)
 
     def get_email(self):
         return self._email
@@ -37,5 +37,5 @@ class User:
         self._password = password
 
     def __str__(self):
-        return f"User(first_name={self.get_first_name}, last_name={self.get_last_name}, email={self.get_email}, " \
+        return f"User(first_name={self.get_firstname}, last_name={self.get_lastname}, email={self.get_email}, " \
                f"user_id={self.get_user_id}, password={self.get_password})"
