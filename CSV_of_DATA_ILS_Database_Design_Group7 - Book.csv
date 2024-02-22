@@ -1,0 +1,51 @@
+isbn,book_id,title,author,pub_year,publisher,genre,user_id,on_hold,hold_end,checkout_date,due_date,fee,fee_amount
+395071229,,The Hobbit,J. R. R. Tolkien,2013,Boston : Mariner Books/Houghton Mifflin Harcourt,Young Adult,,FALSE,,,,FALSE,$0.00
+62334985,,Thud!,Terry Pratchett,2014,"New York : Harper, an imprint of HarperCollinsPublishers","Comedy, Fantasy, Horror, Science Fiction",,FALSE,,,,FALSE,$0.00
+62307415,,Monstrous Regiment, Terry Pratchett,2014,"New York : Harper, an imprint of HarperCollinsPublishers","Comedy, Fantasy, Horror, Science Fiction",,FALSE,,,,FALSE,$0.00
+1519706138,,The Antikythera Mechanism: The History and Mystery of the Ancient World’s Most Famous Astronomical Device,Charles River Editors,2017,CreateSpace Independent Publishing Platform,History,,FALSE,,,,FALSE,$0.00
+1510105003,,Asterix and the Chariot Race,Jean-yves Ferri,2018,London : Orion,Graphic Novel,,FALSE,,,,FALSE,$0.00
+1510100466,,Asterix and the Missing Scroll,Jean-yves Ferri,2016,London Orion Books,Graphic Novel,,FALSE,,,,FALSE,$0.00
+4805315774,,Real bento: fresh and easy lunchbox recipes from a Japanese working mom,Kanae Inoue,2020,Tokyo : Tuttle Publishing,Food,,FALSE,,,,FALSE,$0.00
+1647223755,,Disney Princess Tea Parties,Sarah W. Caron,2022,"San Rafael, California : Insight editions",Food,,FALSE,,,,FALSE,$0.00
+810931818,,Cousteau's Great White Shark,"Jean-Michel Cousteau, Mose Richards",1992,Harry N Abrams Inc,Science,,FALSE,,,,FALSE,$0.00
+1451626657,,Catch-22,Joseph Heller,2011,Simon & Schuster,"Comedy, Drama",,FALSE,,,,FALSE,$0.00
+63021426,,Babel,R. F. Kuang,2022,Harper Voyager,"Fantasy, Horror, Science Fiction",,FALSE,,,,FALSE,$0.00
+307593312,,1Q84,Haruki Murakami,2011,Knopf Doubleday Publishing Group,"Fantasy, Science Fiction",,FALSE,,,,FALSE,$0.00
+316229296,,The Fifth Season,N. K. Jemisin,2015,Orbit,Fantasy,,FALSE,,,,FALSE,$0.00
+1250754739,,The Eye of the World,Robert Jordan,2020,Tor Books,Fantasy,,FALSE,,,,FALSE,$0.00
+316290602,,Mr. Midshipman Hornblower,C. S. Forester,1998,Little Brown & Co; Later Printing,Young Adult,,FALSE,,,,FALSE,$0.00
+765319233,,Chronicles of the Black Company,Glen Cook,2007,Tor Books,Fantasy,,FALSE,,,,FALSE,$0.00
+553296129,,Heir to the Empire,Timothy Zahn,1992,New York : Bantam Books,"Fantasy, Horror, Science Fiction",,FALSE,,,,FALSE,$0.00
+1500506338,,Nice Dragons Finish Last,Rachel Aaron,2014,CreateSpace Independent Publishing Platform,"Fantasy , Science Fiction",,FALSE,,,,FALSE,$0.00
+231018339,,Lanzelet: Romance of Lancelot,Ulrich Von Zatzikhoven,1951,Columbia University Press,"Fantasy, History",,FALSE,,,,FALSE,$0.00
+806127511,,Hieroglyphs and the Afterlife in Ancient Egypt,"Werner Forman, Stephen Quirke",1996,University of Oklahoma Press,History,,FALSE,,,,FALSE,$0.00
+241381134,,The Book of Taliesin: Poems of Heroism and Magic in Another Britain,"Rowan Williams, Gwyneth Lewis",2019,Penguin Classics,"Fantasy, History, Poetry",,FALSE,,,,FALSE,$0.00
+448409498,,A Little Princess,Frances Hodgson Burnett,1995,"Grosset & Dunlap, New York","History, Young Adult",,FALSE,,,,FALSE,$0.00
+1250223881,,Ian McKellen: A Biography,Garry O'Connor,2019,St. Martin's Press,"Biography, History",,FALSE,,,,FALSE,$0.00
+1984861204,,What Color Is Your Parachute?,Richard N. Bolles,2022,Ten Speed Press,Business,,FALSE,,,,FALSE,$0.00
+1421400596,,The Economy of Renaissance Florence,Richard A. Goldthwaite,2011,Johns Hopkins University Press,"Economics, History",,FALSE,,,,FALSE,$0.00
+198166206,,The Lute in Britain: A History of the Instrument and Its Music,Matthew Spring,2001,Oxford University Press,"History, Music",,FALSE,,,,FALSE,$0.00
+66620732,,Just for Fun: The Story of an Accidental Revolutionary,"Linus Torvalds, David Diamond",2002,Harper Business,"Biography, Computers, History",,FALSE,,,,FALSE,$0.00
+865718245,,The Year-Round Solar Greenhouse: How to Design and Build a Net-Zero Energy Greenhouse,"Lindsey Schiller, Marc Plinke",2016,New Society Publishers,"Garden, Science, Technology",,FALSE,,,,FALSE,$0.00
+228100275,,"Tea: History, Terroirs, Varieties","Kevin Gascoyne, Francis Marchand, Jasmin Desharnais, Hugo Americi",2018,Firefly Books,"Food, History, Science, Travel",,FALSE,,,,FALSE,$0.00
+1119467616,,How Your House Works: A Visual Guide to Understanding and Maintaining Your Home,Charlie Wing,2018,RSMeans,"Home, Science, Technology",,FALSE,,,,FALSE,$0.00
+62009494,,Dodger,Terry Pratchett,2012,Clarion Books,"Drama, History, Mystery, Romance, Young Adult",,FALSE,,,,FALSE,$0.00
+684810972,,Bloodsucking Fiends: A Love Story,Christopher Moore,1995,Simon & Schuster,"Comedy, Fantasy, Horror, Romance",,FALSE,,,,FALSE,$0.00
+966543602,,The Chronicles of Master Li and Number Ten Ox,Barry Hughart,1998,The Stars Our Destination Books,"Comedy, Fantasy, History, Horror, Mystery",,FALSE,,,,FALSE,$0.00
+1426209487,,"The Blue Zones, Second Edition: 9 Lessons for Living Longer From the People Who've Lived the Longest",Dan Buettner,2012,National Geographic,Health,,FALSE,,,,FALSE,$0.00
+1583943714,,"Built from Broken: A Science-Based Guide to Healing Painful Joints, Preventing Injuries, and Rebuilding Your Body",Scott H Hogan,2011,North Atlantic Books,Health,,FALSE,,,,FALSE,$0.00
+62968971,,Scary Stories to Tell in the Dark: Three Books to Chill Your Bones,Alvin Schwartz,2019,HarperCollins,Horror,,FALSE,,,,FALSE,$0.00
+1250333296,,Can't Spell Treason Without Tea,Rebecca Thorne,2024,Bramble ,"Comedy, Fantasy, LGBTQ+, Romance",,FALSE,,,,FALSE,$0.00
+1615812261,,Fish & Chips,"Madeleine Urban, Abigail Roux",2010,Dreamspinner ,"Comedy, LGBTQ+, Mystery, Romance, Suspense",,FALSE,,,,FALSE,$0.00
+62573381,,The Murder at the Vicarage,Agatha Christie,2016,William Morrow & Company,"Murder, Mystery, Suspense",,FALSE,,,,FALSE,$0.00
+448095017,,The Secret of the Old Clock,Carolyn Keene,1930,Grosset & Dunlap,"Comedy, Mystery, Young Adult",,FALSE,,,,FALSE,$0.00
+670026654,,The Plantagenets: The Warrior Kings and Queens Who Made England,Dan Jones,2013,Viking,"Biography, History, Politics",,FALSE,,,,FALSE,$0.00
+1611720303,,Division to Unification in Imperial China: The Three Kingdoms to the Tang Dynasty,Jing Liu,2016,Stone Bridge Press,"Biography, History, Politics",,FALSE,,,,FALSE,$0.00
+345543041,,The Heist,"Janet Evanovich, Lee Goldberg",2013,Bantam,"Comedy, Suspense",,FALSE,,,,FALSE,$0.00
+1984857428,,"The History of the Computer: People, Inventions, and Technology that Changed Our World",Rachel Ignotosky,2022,Ten Speed Press,"Computers, History, Science, Technology",,FALSE,,,,FALSE,$0.00
+749581832,,From Bean to Bar: A Chocolate Lover’s Guide to Britain,Andrew Baker,2020,AA Publishing,"Food, Travel",,FALSE,,,,FALSE,$0.00
+1724018205,,Understanding The British: A hilarious guide from Apologising to Wimbledon,Adam Fletcher,2022,Independently published,"Comedy, Travel",,FALSE,,,,FALSE,$0.00
+517884046,,Food in History,Reay Tannahill,1995,Crown,"Food, History",,FALSE,,,,FALSE,$0.00
+802719910,,An Edible History of Humanity,Tom Standage,2010,Bloomsbury USA ,"Food, History",,FALSE,,,,FALSE,$0.00
+168106295X,,100 Things to Do in Asheville Before You Die,Kristy Tolley,2021,Reedy Press,Travel,,FALSE,,,,FALSE,$0.00
+1400052920,,The Hitchhiker's Guide to the Galaxy,Douglas Adams,2004,Crown,"Comedy, Science Fiction, Young Adult",,FALSE,,,,FALSE,$0.00
