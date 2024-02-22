@@ -77,11 +77,11 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'librarydb',
-        'USER': 'fatman',
-        'PASSWORD': 'fatman',
-        'HOST': 'localhost',
-        'PORT': '',
+        'NAME': 'librarysystem',
+        'USER': 'connor_user',
+        'PASSWORD': 'c0nILSg7',
+        'HOST': 'ils-db-instance.cti8om2oa2p6.us-east-1.rds.amazonaws.com',
+        'PORT': '3306',
     }
 }
 
