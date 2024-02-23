@@ -540,14 +540,15 @@ class DataMover:
 
                     if books:
                         print("\nFound books for user with user_id {}:\n".format(user_id))
-                        print("{:<8} | {:<25} | {:<20} | {:<15} | {}".format("Book ID", "Title", "Author", "ISBN",
-                                                                             "Publisher"))
-                        print("-" * 80)
+                        print("{:<8} | {:<25} | {:<20} | {:<15} | {:<15} | {}".format(
+                            "Book ID", "Title", "Author", "ISBN", "Publisher", "Fee Amount"))
+                        print("-" * 100)
 
                         for book in books:
                             status = "Available" if not book[10] else "Checked Out"
-                            print("{:<8} | {:<25} | {:<20} | {:<15} | {}".format(book[0], book[1], book[2], book[6],
-                                                                                 book[4], status))
+                            fee_amount = "${:.2f}".format(book[13]) if book[12] else "$0.00"
+                            print("{:<8} | {:<25} | {:<20} | {:<15} | {:<15} | {}".format(
+                                book[0], book[1], book[2], book[6], book[4], fee_amount, status))
 
                         return books
                     else:
