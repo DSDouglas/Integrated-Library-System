@@ -92,52 +92,244 @@ def main():
     data_mover = DataMover()
 
     # Load data for testing
-    load_data_for_testing(data_mover)
+    # load_data_for_testing(data_mover)
 
     while True:
-        role = input("Select your role (Librarian, Admin, Patron): ").lower()
+        role = input("Select your role (Librarian, Admin, Patron): ").capitalize()
 
-        if role == "librarian" or role == "admin" or role == "patron":
+        if role == "Librarian" or role == "Admin" or role == "Patron":
             user_id = str(input("Enter your user ID: "))
             password = input("Enter your password: ")
 
             if data_mover.validate_user_credentials(user_id, password, role):
                 print("Authentication successful!")
 
-                if role == "librarian":
-
+                if role == "Librarian":
                     while True:
-                        print("\nLibrarian Menu:")
-                        print("1. Create a new patron")
-                        print("2. Check out a book")
-                        print("3. Check in a book")
-                        print("4. Exit")
+                        librarian_menu = """
+                                        \nLibrarian Menu:
+                                        1. Create a new patron
+                                        2. Check out a book
+                                        3. Check in a book
+                                        4. Search by user_id
+                                        5. Search by title
+                                        6. Search by author
+                                        7. Search by publisher
+                                        8. Search by genre
+                                        9. Search by ISBN
+                                        10. Put a book on hold
+                                        11. Take book off hold
+                                        12. Exit
+                                        """
 
-                        action = input("Select an action (1-4): ")
+                        print(librarian_menu)
+                        action = input("Select an action (1-11): ")
 
                         if action == "1":
+                            # Create a new patron
                             first_name = input("Enter patron's first name: ")
-                            last_name = input(" Enter patron's last name: ")
+                            last_name = input("Enter patron's last name: ")
                             email = input("Enter patron's email: ")
                             user_id = input("Enter patron's user ID: ")
                             password = input("Enter patron's password: ")
                             data_mover.create_patron(first_name, last_name, email, user_id, password)
                         elif action == "2":
+                            # Check out a book
                             isbn = input("Enter the ISBN of the book to check out: ")
-                            data_mover.check_out_book(isbn)
+                            user_id = input("Enter the user_id checking out the book: ")
+                            data_mover.check_out_book(isbn, user_id)
                         elif action == "3":
+                            # Check in a book
                             isbn = input("Enter the ISBN of the book to check in: ")
-                            data_mover.check_in_book(isbn)
+                            user_id = input("Enter the user_id checking in the book: ")
+                            data_mover.check_in_book(isbn, user_id)
                         elif action == "4":
+                            # Search by user_id
+                            user_id = input("Enter user ID to search: ")
+                            data_mover.search_user_id(user_id)
+                        elif action == "5":
+                            # Search by title
+                            title = input("Enter title to search: ")
+                            data_mover.search_title(title)
+                        elif action == "6":
+                            # Search by author
+                            author = input("Enter author to search: ")
+                            data_mover.search_author(author)
+                        elif action == "7":
+                            # Search by publisher
+                            publisher = input("Enter publisher to search: ")
+                            data_mover.search_publisher(publisher)
+                        elif action == "8":
+                            # Search by genre
+                            genre = input("Enter genre to search: ")
+                            data_mover.search_genre(genre)
+                        elif action == "9":
+                            # Search by ISBN
+                            isbn = input("Enter ISBN to search: ")
+                            data_mover.search_isbn(isbn)
+                        elif action == "10":
+                            # Put a book on hold
+                            isbn = input("Enter the ISBN of the book to put on hold: ")
+                            user_id = input("Enter the user_id putting the book on hold: ")
+                            data_mover.put_book_on_hold(isbn, user_id)
+                        elif action == "11":
+                            # take book off hold
+                            isbn = input("Enter the ISBN of the book to take off hold")
+                            data_mover.take_book_off_hold(isbn)
+                        elif action == "12":
+                            # Exit
                             break
                         else:
-                            print("Invalid choice. Please enter a number between 1 and 4.")
-                elif role == "admin":
-                    print("\nAdmin Menu:")
-                    break
-                else:
-                    print("\nPatron Menu:")
-                    break
+                            print("Invalid choice. Please enter a number between 1 and 11.")
+                elif role == "Admin":
+                    while True:
+                        admin_menu = """
+                                            \nAdmin Menu:
+                                            1. Create a new patron
+                                            2. Check out a book
+                                            3. Check in a book
+                                            4. Search by user_id
+                                            5. Search by title
+                                            6. Search by author
+                                            7. Search by publisher
+                                            8. Search by genre
+                                            9. Search by ISBN
+                                            10. Put a book on hold
+                                            11. Take book off hold
+                                            12. Create a new librarian
+                                            13. Create a new admin
+                                            14. Exit
+                                            """
+
+                        print(admin_menu)
+                        action = input("Select an action (1-13): ")
+
+                        if action == "1":
+                            # Create a new patron
+                            first_name = input("Enter patron's first name: ")
+                            last_name = input("Enter patron's last name: ")
+                            email = input("Enter patron's email: ")
+                            user_id = input("Enter patron's user ID: ")
+                            password = input("Enter patron's password: ")
+                            data_mover.create_patron(first_name, last_name, email, user_id, password)
+                        elif action == "2":
+                            # Check out a book
+                            isbn = input("Enter the ISBN of the book to check out: ")
+                            user_id = input("Enter the user_id checking out the book: ")
+                            data_mover.check_out_book(isbn, user_id)
+                        elif action == "3":
+                            # Check in a book
+                            isbn = input("Enter the ISBN of the book to check in: ")
+                            user_id = input("Enter the user_id checking in the book: ")
+                            data_mover.check_in_book(isbn, user_id)
+                        elif action == "4":
+                            # Search by user_id
+                            user_id = input("Enter user ID to search: ")
+                            data_mover.search_user_id(user_id)
+                        elif action == "5":
+                            # Search by title
+                            title = input("Enter title to search: ")
+                            data_mover.search_title(title)
+                        elif action == "6":
+                            # Search by author
+                            author = input("Enter author to search: ")
+                            data_mover.search_author(author)
+                        elif action == "7":
+                            # Search by publisher
+                            publisher = input("Enter publisher to search: ")
+                            data_mover.search_publisher(publisher)
+                        elif action == "8":
+                            # Search by genre
+                            genre = input("Enter genre to search: ")
+                            data_mover.search_genre(genre)
+                        elif action == "9":
+                            # Search by ISBN
+                            isbn = input("Enter ISBN to search: ")
+                            data_mover.search_isbn(isbn)
+                        elif action == "10":
+                            # Put a book on hold
+                            isbn = input("Enter the ISBN of the book to put on hold: ")
+                            user_id = input("Enter the user_id putting the book on hold: ")
+                            data_mover.put_book_on_hold(isbn, user_id)
+                        elif action == "11":
+                            # take book off hold
+                            isbn = input("Enter the ISBN of the book to take off hold")
+                            data_mover.take_book_off_hold(isbn)
+
+                        elif action == "12":
+                            # Create a new librarian
+                            first_name = input("Enter Librarian's first name: ")
+                            last_name = input("Enter Librarian's last name: ")
+                            email = input("Enter Librarian's email: ")
+                            user_id = input("Enter Librarian's user ID: ")
+                            password = input("Enter Librarian's password: ")
+                            data_mover.create_librarian(first_name,last_name, email, user_id, password)
+                        elif action == "13":
+                            # Create a new admin
+                            first_name = input("Enter Admin's first name: ")
+                            last_name = input("Enter Admin's last name: ")
+                            email = input("Enter Admin's email: ")
+                            user_id = input("Enter Admin's user ID: ")
+                            password = input("Enter Admin's password: ")
+                            data_mover.create_librarian(first_name, last_name, email, user_id, password)
+                        elif action == "14":
+                            # Exit
+                            break
+                        else:
+                            print("Invalid choice. Please enter a number between 1 and 13.")
+
+                elif role == "Patron":
+                    patron_menu = """
+                                            \nPatron Menu:
+                                            1. Search by user_id
+                                            2. Search by title
+                                            3. Search by author
+                                            4. Search by publisher
+                                            5. Search by genre
+                                            6. Search by ISBN
+                                            7. Put a book on hold
+                                            8. Exit
+                                            """
+
+                    while True:
+                        print(patron_menu)
+                        action = input("Select an action (1-8): ")
+
+                        if action == "1":
+                            # Search by user_id
+                            user_id = input("Enter user ID to search: ")
+                            data_mover.search_user_id(user_id)
+                        elif action == "2":
+                            # Search by title
+                            title = input("Enter title to search: ")
+                            data_mover.search_title(title)
+                        elif action == "3":
+                            # Search by author
+                            author = input("Enter author to search: ")
+                            data_mover.search_author(author)
+                        elif action == "4":
+                            # Search by publisher
+                            publisher = input("Enter publisher to search: ")
+                            data_mover.search_publisher(publisher)
+                        elif action == "5":
+                            # Search by genre
+                            genre = input("Enter genre to search: ")
+                            data_mover.search_genre(genre)
+                        elif action == "6":
+                            # Search by ISBN
+                            isbn = input("Enter ISBN to search: ")
+                            data_mover.search_isbn(isbn)
+                        elif action == "7":
+                            # Put a book on hold
+                            isbn = input("Enter the ISBN of the book to put on hold: ")
+                            user_id = input("Enter your user ID: ")
+                            data_mover.put_book_on_hold(isbn, user_id)
+                        elif action == "8":
+                            # Exit
+                            break
+                        else:
+                            print("Invalid choice. Please enter a number between 1 and 8.")
+
 
             else:
                 print("Invalid user ID or password. Please try again.")

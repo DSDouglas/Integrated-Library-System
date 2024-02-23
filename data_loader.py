@@ -1,8 +1,9 @@
+import datetime
+
 import pymysql
 import csv
 from patron import Patron
 from admin import Admin
-from book import Book
 from librarian import Librarian
 
 
@@ -28,7 +29,7 @@ class DataMover:
             self.connection = pymysql.connect(
                 host='localhost',
                 user='root',
-                password='Noelle0718',
+                password='yourpass',
                 database='librarysystem'
             )
         except pymysql.MySQLError as error:
@@ -75,14 +76,16 @@ class DataMover:
                 publisher VARCHAR(255),
                 genre VARCHAR(255),
                 isbn BIGINT,
-                user_id VARCHAR(255),
+                patron_id INT,
                 on_hold BOOLEAN,
                 hold_end DATE,
                 checkout_date DATE,
                 due_date DATE,
                 fee BOOLEAN,
-                fee_amount DECIMAL(10, 2)
+                fee_amount DECIMAL(10, 2),
+                FOREIGN KEY (patron_id) REFERENCES Patron(patron_id)
             )"""
+
         ]
 
         # Execute each table creation query
@@ -154,6 +157,8 @@ class DataMover:
         Returns:
         - True if authentication is successful, False otherwise.
         """
+        if not self.connection or not self.connection.open:
+            self.connect_to_database()
         try:
             # Check if there is an active connection
             if self.connection:
@@ -170,6 +175,7 @@ class DataMover:
         except pymysql.MySQLError as error:
             # Handle the case where the connection to the database fails
             print(f"Failed to connect to the database: {error}")
+            print(error.args)
 
         # If not found in the database or connection failed, check the CSV file
         csv_file_path = f"{role}_failed_connections.csv"
@@ -197,6 +203,7 @@ class DataMover:
         - user_id: User ID of the patron.
         - password: Password of the patron.
         """
+
         try:
             # Connect to the database and check if user_id exists
             self.connect_to_database()
@@ -256,6 +263,7 @@ class DataMover:
             self.connect_to_database()
 
             with self.connection.cursor() as cursor:
+
                 cursor.execute(f"SELECT * FROM Librarian WHERE user_id = '{user_id}'")
                 result = cursor.fetchone()
 
@@ -346,88 +354,85 @@ class DataMover:
 
             print("Admin created successfully! (Added to failed connections)")
 
-    def check_out_book(self, isbn):
-        """
-        Check out a book in the database.
-
-        Args:
-        - isbn: The ISBN of the book to check out.
-        """
+    def check_out_book(self, isbn, user_id):
         try:
-
-            # Connect to the database and change the status
+            # Connect to the database
             self.connect_to_database()
 
             with self.connection.cursor() as cursor:
-                cursor.execute(f"UPDATE Book SET checkout = TRUE WHERE isbn = {isbn}")
-                self.connection.commit()
+                # Get patron_id based on user_id
+                cursor.execute("SELECT patron_id FROM Patron WHERE user_id = %s", (user_id,))
+                result = cursor.fetchone()
 
-            print("Book checked out successfully!")
+                if result:
+                    patron_id = result[0]
+
+                    # Update the Book entry in the database
+                    update_query = """
+                    UPDATE Book
+                    SET
+                        patron_id = %s,
+                        checkout_date = %s,
+                        due_date = %s
+                    WHERE isbn = %s
+                    """
+
+                    checkout_date = datetime.date.today()
+                    due_date = checkout_date + datetime.timedelta(days=7)
+
+                    cursor.execute(update_query, (patron_id, checkout_date, due_date, isbn))
+
+                    print("Book checked out successfully!")
+
+                else:
+                    print(f"User with user_id {user_id} not found.")
 
         except (pymysql.MySQLError, AttributeError) as error:
-            print(f"Failed to connect to the database: {error}")
+            print(f"Failed to connect to the database or execute the query: {error}")
 
-            # Check the Book_failed_connections.csv file
-            csv_file_path = "Book_failed_connections.csv"
-            try:
-                with open(csv_file_path, mode='r') as file:
-                    reader = csv.reader(file)
-                    updated_rows = []
-                    for row in reader:
-                        if len(row) >= 7 and row[6] == isbn:
-                            row[7] = "True"
-                        updated_rows.append(row)
+        finally:
+            # Commit the changes and close the database connection
+            self.connection.commit()
+            self.close_connection()
 
-                # Write updated rows back to the CSV file
-                with open(csv_file_path, mode='w', newline='') as file:
-                    writer = csv.writer(file)
-                    writer.writerows(updated_rows)
-
-                print("Book checked out successfully! (Updated in failed connections)")
-
-            except FileNotFoundError:
-                print("Book checked out successfully! (Added to failed connections)")
-
-    def check_in_book(self, isbn):
-        """
-        Check in a book in the database.
-
-        Args:
-        - isbn: The ISBN of the book to check in.
-        """
+    def check_in_book(self, isbn, user_id):
         try:
-            # Connect to the database and change the status
+            # Connect to the database
             self.connect_to_database()
 
             with self.connection.cursor() as cursor:
-                cursor.execute(f"UPDATE Book SET checkout = FALSE WHERE isbn = {isbn}")
-                self.connection.commit()
+                # Search for patron_id based on user_id
+                cursor.execute("SELECT patron_id FROM Patron WHERE user_id = %s", (user_id,))
+                result = cursor.fetchone()
 
-            print("Book checked in successfully!")
+                if result:
+                    patron_id = result[0]
+
+                    # Update the Book entry in the database
+                    update_query = """
+                    UPDATE Book
+                    SET
+                        patron_id = NULL,
+                        checkout_date = NULL,
+                        due_date = NULL
+                    WHERE isbn = %s AND patron_id = %s
+                    """
+
+                    cursor.execute(update_query, (isbn, patron_id))
+
+                    print("Book checked in successfully!")
+
+                else:
+                    print(f"User with user_id {user_id} not found.")
 
         except (pymysql.MySQLError, AttributeError) as error:
             print(f"Failed to connect to the database: {error}")
+            # Handle other errors if necessary
 
-            # Check the Book_failed_connections.csv file
-            csv_file_path = "Book_failed_connections.csv"
-            try:
-                with open(csv_file_path, mode='r') as file:
-                    reader = csv.reader(file)
-                    updated_rows = []
-                    for row in reader:
-                        if len(row) >= 8 and row[6] == isbn:
-                            row[7] = "False"
-                        updated_rows.append(row)
-
-                # Write updated rows back to the CSV file
-                with open(csv_file_path, mode='w', newline='') as file:
-                    writer = csv.writer(file)
-                    writer.writerows(updated_rows)
-
-                print("Book checked in successfully! (Updated in failed connections)")
-
-            except FileNotFoundError:
-                print("Book checked in successfully! (Added to failed connections)")
+        finally:
+            # Close the database connection
+            self.connection.commit()
+            self.close_connection()
 
     def search_isbn(self, isbn):
         """
@@ -445,11 +450,28 @@ class DataMover:
             with self.connection.cursor() as cursor:
                 cursor.execute(f"SELECT * FROM Book WHERE isbn = '{isbn}'")
                 books = cursor.fetchall()
-            return books
+
+            if books:
+                print("\nFound books with ISBN {}:\n".format(isbn))
+                print("{:<8} | {:<25} | {:<20} | {:<15} | {}".format("Book ID", "Title", "Author", "ISBN", "Status"))
+                print("-" * 80)
+
+                for book in books:
+                    status = "Checked Out" if book[10] else "Available"
+                    print("{:<8} | {:<25} | {:<20} | {:<15} | {}".format(book[0], book[1], book[2], book[6], status))
+
+                return books
+            else:
+                print("No books found with ISBN {}.".format(isbn))
+                return []
 
         except pymysql.MySQLError as error:
-            print(f"Failed to connect to the database: {error}")
+            print("Failed to connect to the database: {}".format(error))
             return []
+
+        finally:
+            # Close the database connection
+            self.close_connection()
 
     def search_genre(self, genre):
         """
@@ -467,11 +489,28 @@ class DataMover:
             with self.connection.cursor() as cursor:
                 cursor.execute(f"SELECT * FROM Book WHERE genre = '{genre}'")
                 books = cursor.fetchall()
-            return books
+
+            if books:
+                print("\nFound books with genre {}:\n".format(genre))
+                print("{:<8} | {:<25} | {:<20} | {:<15} | {}".format("Book ID", "Title", "Author", "ISBN", "Status"))
+                print("-" * 80)
+
+                for book in books:
+                    status = "Checked Out" if book[10] else "Available"
+                    print("{:<8} | {:<25} | {:<20} | {:<15} | {}".format(book[0], book[1], book[2], book[6], status))
+
+                return books
+            else:
+                print("No books found with genre {}.".format(genre))
+                return []
 
         except pymysql.MySQLError as error:
-            print(f"Failed to connect to the database: {error}")
+            print("Failed to connect to the database: {}".format(error))
             return []
+
+        finally:
+            # Close the database connection
+            self.close_connection()
 
     def search_user_id(self, user_id):
         """
@@ -484,16 +523,48 @@ class DataMover:
         - A list of books associated with the user ID.
         """
         try:
-            # Connect to the database and execute the query
+            # Connect to the database
             self.connect_to_database()
+
             with self.connection.cursor() as cursor:
-                cursor.execute(f"SELECT * FROM Book WHERE user_id = '{user_id}'")
-                books = cursor.fetchall()
-            return books
+                # Search for patron_id based on user_id
+                cursor.execute("SELECT patron_id FROM Patron WHERE user_id = %s", (user_id,))
+                result = cursor.fetchone()
+
+                if result:
+                    patron_id = result[0]
+
+                    # Execute the query to get books associated with the patron_id
+                    cursor.execute("SELECT * FROM Book WHERE patron_id = %s", (patron_id,))
+                    books = cursor.fetchall()
+
+                    if books:
+                        print("\nFound books for user with user_id {}:\n".format(user_id))
+                        print("{:<8} | {:<25} | {:<20} | {:<15} | {}".format("Book ID", "Title", "Author", "ISBN",
+                                                                             "Publisher"))
+                        print("-" * 80)
+
+                        for book in books:
+                            status = "Available" if not book[10] else "Checked Out"
+                            print("{:<8} | {:<25} | {:<20} | {:<15} | {}".format(book[0], book[1], book[2], book[6],
+                                                                                 book[4], status))
+
+                        return books
+                    else:
+                        print("No books found for user with user_id {}.".format(user_id))
+                        return []
+
+                else:
+                    print("User with user_id {} not found.".format(user_id))
+                    return []
 
         except pymysql.MySQLError as error:
-            print(f"Failed to connect to the database: {error}")
+            print("Failed to connect to the database: {}".format(error))
             return []
+
+        finally:
+            # Close the database connection
+            self.close_connection()
 
     def search_author(self, author):
         """
@@ -511,11 +582,29 @@ class DataMover:
             with self.connection.cursor() as cursor:
                 cursor.execute(f"SELECT * FROM Book WHERE author = '{author}'")
                 books = cursor.fetchall()
-            return books
+
+            if books:
+                print("\nFound books by author {}:\n".format(author))
+                print("{:<8} | {:<25} | {:<20} | {:<15} | {}".format("Book ID", "Title", "Author", "ISBN", "Publisher"))
+                print("-" * 80)
+
+                for book in books:
+                    status = "Checked Out" if book[10] else "Available"
+                    print("{:<8} | {:<25} | {:<20} | {:<15} | {}".format(book[0], book[1], book[2], book[6], book[4],
+                                                                         status))
+
+                return books
+            else:
+                print("No books found by author {}.".format(author))
+                return []
 
         except pymysql.MySQLError as error:
-            print(f"Failed to connect to the database: {error}")
+            print("Failed to connect to the database: {}".format(error))
             return []
+
+        finally:
+            # Close the database connection
+            self.close_connection()
 
     def search_publisher(self, publisher):
         """
@@ -533,11 +622,28 @@ class DataMover:
             with self.connection.cursor() as cursor:
                 cursor.execute(f"SELECT * FROM Book WHERE publisher = '{publisher}'")
                 books = cursor.fetchall()
-            return books
+
+            if books:
+                print("\nFound books published by {}:\n".format(publisher))
+                print("{:<8} | {:<25} | {:<20} | {:<15} | {}".format("Book ID", "Title", "Author", "ISBN", "Status"))
+                print("-" * 80)
+
+                for book in books:
+                    status = "Checked Out" if book[10] else "Available"
+                    print("{:<8} | {:<25} | {:<20} | {:<15} | {}".format(book[0], book[1], book[2], book[6], status))
+
+                return books
+            else:
+                print("No books found published by {}.".format(publisher))
+                return []
 
         except pymysql.MySQLError as error:
-            print(f"Failed to connect to the database: {error}")
+            print("Failed to connect to the database: {}".format(error))
             return []
+
+        finally:
+            # Close the database connection
+            self.close_connection()
 
     def search_title(self, title):
         """
@@ -555,38 +661,103 @@ class DataMover:
             with self.connection.cursor() as cursor:
                 cursor.execute(f"SELECT * FROM Book WHERE title LIKE '%{title}%'")
                 books = cursor.fetchall()
-            return books
+
+            if books:
+                print("\nFound books with title {}:\n".format(title))
+                print("{:<8} | {:<25} | {:<20} | {:<15} | {}".format("Book ID", "Title", "Author", "ISBN", "Status"))
+                print("-" * 80)
+
+                for book in books:
+                    status = "Checked Out" if book[10] else "Available"
+                    print("{:<8} | {:<25} | {:<20} | {:<15} | {}".format(book[0], book[1], book[2], book[6], status))
+
+                return books
+            else:
+                print("No books found with title {}.".format(title))
+                return []
 
         except pymysql.MySQLError as error:
-            print(f"Failed to connect to the database: {error}")
+            print("Failed to connect to the database: {}".format(error))
             return []
 
-    def put_book_on_hold(self, isbn):
+        finally:
+            # Close the database connection
+            self.close_connection()
+
+    def put_book_on_hold(self, isbn, user_id):
         """
         Put a book on hold in the database.
 
         Args:
         - isbn: The ISBN of the book to put on hold.
+        - user_id: The user ID of the patron placing the book on hold.
         """
         try:
             # Connect to the database
             self.connect_to_database()
 
-            # Search for the book with the given ISBN
             with self.connection.cursor() as cursor:
-                cursor.execute(f"SELECT * FROM Book WHERE isbn = '{isbn}'")
-                book_data = cursor.fetchone()
+                # Get patron_id based on user_id
+                cursor.execute("SELECT patron_id FROM Patron WHERE user_id = %s", (user_id,))
+                result = cursor.fetchone()
 
-            # If the book is found, create a Book instance and put it on hold
-            if book_data:
-                book = Book(*book_data)
-                book.on_hold(book)
-                print("Book put on hold successfully!")
-            else:
-                print("Book not found in the database.")
+                if result:
+                    patron_id = result[0]
+
+                    # Calculate expiration date (3 days later)
+                    hold_end = datetime.date.today() + datetime.timedelta(days=3)
+
+                    # Update the Book entry in the database
+                    update_query = """
+                    UPDATE Book
+                    SET
+                        patron_id = %s,
+                        on_hold = %s,
+                        hold_end = %s
+                    WHERE isbn = %s
+                    """
+                    cursor.execute(update_query, (patron_id, True, hold_end, isbn))
+
+                    print("Book put on hold successfully!")
+
+                else:
+                    print(f"User with user_id {user_id} not found.")
 
         except pymysql.MySQLError as error:
             print(f"Failed to connect to the database: {error}")
+
+        finally:
+            # Close the database connection
+            self.close_connection()
+
+    def take_book_off_hold(self, isbn):
+        """
+        Take a book off hold in the database.
+
+        Args:
+        - isbn: The ISBN of the book to take off hold.
+        """
+        try:
+            # Connect to the database
+            self.connect_to_database()
+
+            with self.connection.cursor() as cursor:
+                # Update the Book entry in the database
+                update_query = """
+                UPDATE Book
+                SET
+                    patron_id = NULL,
+                    on_hold = %s,
+                    hold_end = NULL
+                WHERE isbn = %s
+                """
+                cursor.execute(update_query, (False, isbn))
+
+                print("Book taken off hold successfully!")
+
+        except pymysql.MySQLError as error:
+            print(f"Failed to connect to the database: {error}")
+
         finally:
             # Close the database connection
             self.close_connection()
