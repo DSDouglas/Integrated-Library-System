@@ -4,11 +4,11 @@ from .models import Book
 
 
 def index(request):
-    return render(request, "app/index.html")
+    return render(request, "index.html")
 
 def catalog(request):
     books = Book.objects.all()
-    return render(request, "app/catalog.html", {'books': books})
+    return render(request, "catalog.html", {'books': books})
 
 # def login(request):
     # return render(request, "app/login.html")
