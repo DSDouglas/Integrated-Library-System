@@ -10,5 +10,5 @@ def catalog(request):
     books = Book.objects.all()
     return render(request, "app/catalog.html", {'books': books})
 
-def login(request):
-    return render(request, "app/login.html")
+# def login(request):
+    # return render(request, "app/login.html")
