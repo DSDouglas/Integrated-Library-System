@@ -28,6 +28,8 @@ DEBUG = os.getenv('DJANGO_DEBUG', True)
 
 ALLOWED_HOSTS = ['18.204.180.15', '127.0.0.1', 'localhost', 'group7.teacake.dev']
 
+LOGIN_REDIRECT_URL = '/'
+
 
 # Application definition
 
