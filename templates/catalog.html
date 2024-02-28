@@ -6,6 +6,7 @@
            width="100%">
         <thead> 
             <tr>
+                <th scope="col">Cover</th>
                 <th scope="col">#</th>
                 <th scope="col">Name</th>
                 <th scope="col">Author</th>
@@ -17,6 +18,7 @@
         <tbody>
             {% for item in books %}
             <tr> 
+                <td><img src="https://book-covers-public.s3.amazonaws.com/{item.isbn}.jpg" alt="{item.title}"></td>
                 <td>{{ item.book_id }}</td>
                 <td>{{ item.title }}</td>
                 <td>{{ item.author }}</td>
