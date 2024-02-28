@@ -18,7 +18,7 @@
         <tbody>
             {% for item in books %}
             <tr> 
-                <td><img src="https://book-covers-public.s3.amazonaws.com/{{ item.isbn }}.jpg" alt="{{ item.title }}"></td>
+                <td><img src="https://book-covers-public.s3.amazonaws.com/{{ item.isbn }}.jpg" alt="{{ item.title }}" width="200" height="300"></td>
                 <td>{{ item.book_id }}</td>
                 <td>{{ item.title }}</td>
                 <td>{{ item.author }}</td>
