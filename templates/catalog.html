@@ -1,34 +1,40 @@
 {% extends "base.html" %}
 {% block content %}
-    <table id="book-data-table"
-           class="table table-striped table-bordered table-sm"
-           cellspacing="0"
-           width="100%">
-        <thead> 
-            <tr>
-                <th scope="col">Cover</th>
-                <th scope="col">#</th>
-                <th scope="col">Name</th>
-                <th scope="col">Author</th>
-                <th scope="col">Genre</th>
-                <th scope="col">ISBN</th>
-                <th scope="col">User</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in books %}
-            <tr> 
-                <td><img src="https://book-covers-public.s3.amazonaws.com/{{ item.isbn }}.jpg" alt="{{ item.title }}" width="200" height="300"></td>
-                <td>{{ item.book_id }}</td>
-                <td>{{ item.title }}</td>
-                <td>{{ item.author }}</td>
-                <td>{{ item.genre }}</td>
-                <td>{{ item.isbn }}</td>
-                <td>{{ item.user_id }}</td>                
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <form id="checkout-form" method="post" action="{% url 'checked_out_books' %}">
+        {% csrf_token %}
+        <table id="book-data-table"
+               class="table table-striped table-bordered table-sm"
+               cellspacing="0"
+               width="100%">
+            <thead> 
+                <tr>
+                    <th scope="col">Select</th>
+                    <th scope="col">Cover</th>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">Genre</th>
+                    <th scope="col">ISBN</th>
+                    <th scope="col">User</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in books %}
+                <tr> 
+                    <td><input type="checkbox" name="books" value="{{ item.book_id }}"></td>
+                    <td><img src="https://book-covers-public.s3.amazonaws.com/{{ item.isbn }}.jpg" alt="{{ item.title }}" width="100" height="150"></td>
+                    <td>{{ item.book_id }}</td>
+                    <td>{{ item.title }}</td>
+                    <td>{{ item.author }}</td>
+                    <td>{{ item.genre }}</td>
+                    <td>{{ item.isbn }}</td>
+                    <td>{{ item.user_id }}</td>                
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-primary">Checkout</button>
+    </form>
 {% endblock content %}
 {% block script %}
     <script>
