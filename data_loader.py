@@ -1,5 +1,4 @@
 import datetime
-
 import pymysql
 import csv
 from patron import Patron
@@ -29,7 +28,7 @@ class DataMover:
             self.connection = pymysql.connect(
                 host='localhost',
                 user='root',
-                password='yourpass',
+                password='Noelle0718',
                 database='librarysystem'
             )
         except pymysql.MySQLError as error:
@@ -367,22 +366,38 @@ class DataMover:
                 if result:
                     patron_id = result[0]
 
-                    # Update the Book entry in the database
-                    update_query = """
-                    UPDATE Book
-                    SET
-                        patron_id = %s,
-                        checkout_date = %s,
-                        due_date = %s
-                    WHERE isbn = %s
-                    """
+                    # Call the search_user_id method to get the user's books
+                    books = self.search_user_id(user_id)
 
-                    checkout_date = datetime.date.today()
-                    due_date = checkout_date + datetime.timedelta(days=7)
+                    # Check the number of books and outstanding fees
+                    if len(books) >= 4:
+                        print(
+                            "Sorry, you have reached the checkout limit (4 books). Please return some books before "
+                            "checking out more.")
+                    if any(book[12] for book in books):
+                        print("Sorry, you have outstanding fees. Please pay your fees before checking out more books.")
+                    if any(book[10] and datetime.date.today() > book[10] for book in books):
+                        print(
+                            "Sorry, you have overdue books. Please return overdue books and pay fees before checking "
+                            "out new books.")
+                    else:
+                        # Proceed with the checkout process
+                        # Update the Book entry in the database
+                        update_query = """
+                        UPDATE Book
+                        SET
+                            patron_id = %s,
+                            checkout_date = %s,
+                            due_date = %s
+                        WHERE isbn = %s
+                        """
 
-                    cursor.execute(update_query, (patron_id, checkout_date, due_date, isbn))
+                        checkout_date = datetime.date.today()
+                        due_date = checkout_date + datetime.timedelta(days=7)
 
-                    print("Book checked out successfully!")
+                        cursor.execute(update_query, (patron_id, checkout_date, due_date, isbn))
+
+                        print("Book checked out successfully!")
 
                 else:
                     print(f"User with user_id {user_id} not found.")
@@ -393,7 +408,8 @@ class DataMover:
         finally:
             # Commit the changes and close the database connection
             self.connection.commit()
-            self.close_connection()
+
+
 
     def check_in_book(self, isbn, user_id):
         try:
@@ -432,7 +448,7 @@ class DataMover:
         finally:
             # Close the database connection
             self.connection.commit()
-            self.close_connection()
+
 
     def search_isbn(self, isbn):
         """
@@ -512,19 +528,51 @@ class DataMover:
             # Close the database connection
             self.close_connection()
 
-    def search_user_id(self, user_id):
-        """
-        Search books by user ID in the database.
-
-        Args:
-        - user_id: The user ID to search for.
-
-        Returns:
-        - A list of books associated with the user ID.
-        """
+    def calculate_fee(self, book):
         try:
-            # Connect to the database
-            self.connect_to_database()
+            if not self.connection:
+                self.connect_to_database()
+
+            with self.connection.cursor() as cursor:
+                if book[11] and datetime.date.today() > book[11]:
+                    days_overdue = (datetime.date.today() - book[11]).days
+                    fee_amount = days_overdue * 0.5  # 50 cents per day overdue
+
+                    # Update fee and fee_amount in the database
+                    update_query = """
+                    UPDATE Book
+                    SET
+                        fee = %s,
+                        fee_amount = %s
+                    WHERE isbn = %s
+                    """
+                    cursor.execute(update_query, (True, fee_amount, book[6]))
+
+                else:
+                    # Update fee and fee_amount to 0.0 and False in the database
+                    update_query = """
+                    UPDATE Book
+                    SET
+                        fee = %s,
+                        fee_amount = %s
+                    WHERE isbn = %s
+                    """
+                    cursor.execute(update_query, (False, 0.0, book[6]))
+
+                # Commit the changes
+                self.connection.commit()
+
+        except pymysql.MySQLError as error:
+            print(f"Failed to connect to the database: {error}")
+
+        finally:
+            # Do not close the connection here; it will be handled elsewhere
+            pass
+
+    def search_user_id(self, user_id):
+        try:
+            if not self.connection:
+                self.connect_to_database()
 
             with self.connection.cursor() as cursor:
                 # Search for patron_id based on user_id
@@ -544,6 +592,15 @@ class DataMover:
                             "Book ID", "Title", "Author", "ISBN", "Publisher", "Fee Amount"))
                         print("-" * 100)
 
+                        # Calculate and update fees for each book
+                        for book in books:
+                            self.calculate_fee(book)
+
+                        # Fetch updated book information after calculating fees
+                        cursor.execute("SELECT * FROM Book WHERE patron_id = %s", (patron_id,))
+                        books = cursor.fetchall()
+
+                        # Print the table with updated fee information
                         for book in books:
                             status = "Available" if not book[10] else "Checked Out"
                             fee_amount = "${:.2f}".format(book[13]) if book[12] else "$0.00"
@@ -564,8 +621,8 @@ class DataMover:
             return []
 
         finally:
-            # Close the database connection
-            self.close_connection()
+            # Do not close the connection here; it will be handled elsewhere
+            pass
 
     def search_author(self, author):
         """

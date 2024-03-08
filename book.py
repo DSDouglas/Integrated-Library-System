@@ -6,7 +6,6 @@ class Book:
     def __init__(self, title, author, pub_year, publisher, genre, isbn, patron_id=None, on_hold=False,
                  hold_end=None, checkout_date=None, due_date=None, fee=False, fee_amount=0.0):
 
-        # print("Received arguments:", len([arg for arg in locals() if arg not in ('self', '__class__')]))
         self._title = str(title)
         self._author = str(author)
         self._pub_year = int(pub_year)
@@ -62,35 +61,30 @@ class Book:
 
     def patron_id(self, patron_id):
         self._patron_id = str(patron_id)
-        self.update_table()
 
     def get_checkout_date(self):
         return self._checkout_date
 
     def checkout_date(self, checkout_date):
         self._checkout_date = checkout_date
-        self.update_table()
 
     def get_due_date(self):
         return self._due_date
 
     def due_date(self, due_date):
         self._due_date = due_date
-        self.update_table()
 
     def get_fee(self):
         return self._fee
 
-    def fee(self, fee):
+    def set_fee(self, fee):
         self._fee = fee
-        self.update_table()
 
     def get_fee_amount(self):
         return self._fee_amount
 
-    def fee_amount(self, fee_amount):
+    def set_fee_amount(self, fee_amount):
         self._fee_amount = fee_amount
-        self.update_table()
 
     def get_hold_end(self):
         return self._hold_end
@@ -121,6 +115,7 @@ class Book:
         self._fee = False
         self._fee_amount = 0.0
         self._on_hold = False
+        self.update_table()
 
     def check_in(self):
         self._checkout_date = None
@@ -130,6 +125,7 @@ class Book:
         self._on_hold = False
         self._hold_end = None
         self._patron_id = None
+        self.update_table()
 
     def update_table(self):
         try:
@@ -137,7 +133,7 @@ class Book:
             connection = pymysql.connect(
                 host='localhost',
                 user='root',
-                password='yourpass',
+                password='Noelle0718',
                 database='librarysystem'
             )
 
@@ -173,15 +169,6 @@ class Book:
 
         except pymysql.MySQLError as error:
             print(f"Failed to connect to the database: {error}")
-
-    def calculate_fee(self):
-        if self._due_date and datetime.date.today() > self._due_date:
-            days_overdue = (datetime.date.today() - self._due_date).days
-            self._fee_amount = days_overdue * 0.5  # 50 cents per day overdue
-            self._fee = True
-        else:
-            self._fee_amount = 0.0
-            self._fee = False
 
     def __str__(self):
         return f"Book(title={self.get_title()}, author={self.get_author()}," \
