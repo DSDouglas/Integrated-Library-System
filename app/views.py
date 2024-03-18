@@ -1,6 +1,10 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import Book
+from django.contrib.auth import authenticate,login
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import Group
+
 
 
 def index(request):
@@ -40,3 +44,29 @@ def checkin_view(request):
         book.save()
         return HttpResponseRedirect('/checked-out-books/')  # Redirect to checked out books page
     return HttpResponseRedirect('/')  # Redirect to home page if not a POST request
+ 
+def create_account(request):
+ 
+    if request.user.is_authenticated:
+        return HttpResponseRedirect('/')
+     
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+ 
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password1']
+            user = authenticate(username = username,password = password)
+            my_group = Group.objects.get(name='Patrons') 
+            my_group.user_set.add(user)
+
+            login(request, user)
+            return HttpResponseRedirect('/')
+         
+        else:
+            return render(request,'create_account.html',{'form':form})
+     
+    else:
+        form = UserCreationForm()
+        return render(request,'create_account.html',{'form':form})
