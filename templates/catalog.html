@@ -8,7 +8,9 @@
                width="100%">
             <thead> 
                 <tr>
+                    {% if user.is_authenticated %}
                     <th scope="col">Select</th>
+                    {% endif %}
                     <th scope="col">Cover</th>
                     <th scope="col">#</th>
                     <th scope="col">Name</th>
@@ -21,7 +23,9 @@
             <tbody>
                 {% for item in books %}
                 <tr> 
+                    {% if user.is_authenticated %}
                     <td><input type="checkbox" name="books" value="{{ item.book_id }}"></td>
+                    {% endif %}
                     <td><img src="https://book-covers-public.s3.amazonaws.com/{{ item.isbn }}.jpg" alt="{{ item.title }}" width="100" height="150"></td>
                     <td>{{ item.book_id }}</td>
                     <td>{{ item.title }}</td>
@@ -33,7 +37,9 @@
                 {% endfor %}
             </tbody>
         </table>
+        {% if user.is_authenticated %}
         <button type="submit" class="btn btn-primary">Checkout</button>
+        {% endif %}
     </form>
 {% endblock content %}
 {% block script %}

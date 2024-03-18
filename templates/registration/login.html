@@ -31,7 +31,4 @@
     <input type="hidden" name="next" value="{{ next }}">
   </form>
 </div>
-  {# Assumes you set up the password_reset view in your URLconf #}
-  <p><a href="{% url 'password_reset' %}">Lost password?</a></p>
-
 {% endblock %}

@@ -31,8 +31,6 @@ def checked_out_books_view(request):
             book = Book.objects.get(pk=book_id)
             book.user_id = request.user.id  # Assuming user is authenticated
             book.save()
-    # return HttpResponseRedirect('/success/')  # Redirect to success page
-    # return render(request, 'checked_out_books.html')
     checked_out_books = Book.objects.filter(user_id=request.user.id)
     return render(request, 'checked_out_books.html', {'checked_out_books': checked_out_books})
 
