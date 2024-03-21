@@ -1,9 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="container">
-        <div class="form-group">
-            <h1>Hello Stranger! Welcome to the Library</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <img src="https://book-covers-public.s3.amazonaws.com/{{ book.isbn }}.jpg" class="card-img-top" alt="{{ book.title }}">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">{{ book.title }}</h5>
+                        <p class="card-text">Author: {{ book.author }}</p>
+                        <p class="card-text">Genre: {{ book.genre }}</p>
+                        <p class="card-text">ISBN: {{ book.isbn }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Description</h5>
+                        <p class="card-text">Pretend there is a descrition here please</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="page-header"></div>
 {% endblock content %}
