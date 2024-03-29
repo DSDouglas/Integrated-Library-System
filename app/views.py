@@ -1,17 +1,19 @@
 import wikipediaapi
-from django.urls import reverse
-from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
-from .models import Book
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import Group
-from django.contrib.auth.decorators import login_required
-from random import randint
-from django.contrib import messages
-import requests
-from django.core.cache import cache
 from datetime import datetime, timedelta
+from random import randint
+
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import Group
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.cache import cache
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import reverse
+
+from .models import Book
 
 
 def get_book_description(title):
@@ -38,8 +40,18 @@ def get_book_of_the_day():
 
 @login_required
 def place_hold_view(request, book_id):
-    book = Book.objects.get(pk=book_id)
-    if book.user_id == request.user.id:
+    user_id = request.user.id
+    if Book.objects.filter(user_id=user_id, on_hold=True).count() >= 4:
+        messages.error(request, "You can only hold up to 4 books at a time.")
+        return HttpResponseRedirect(reverse("catalog"))
+
+    try:
+        book = Book.objects.get(pk=book_id)
+    except ObjectDoesNotExist:
+        messages.error(request, "Book not found.")
+        return HttpResponseRedirect(reverse("catalog"))
+
+    if book.user_id == user_id:
         messages.error(
             request, "You cannot place a hold on a book you already have checked out."
         )
@@ -48,10 +60,10 @@ def place_hold_view(request, book_id):
     else:
         book.on_hold = True
         book.hold_end = datetime.now() + timedelta(weeks=2)
-        book.user_id = request.user.id  # Set user_id
+        book.user_id = user_id
         book.save()
         messages.success(request, "Book placed on hold successfully.")
-        return HttpResponseRedirect(reverse("catalog"))  # Redirect back to catalog page
+    return HttpResponseRedirect(reverse("catalog"))
 
 
 def index(request):
@@ -68,22 +80,30 @@ def checked_out_books_view(request):
     if request.method == "POST":
         book_ids = request.POST.getlist("books")
         for book_id in book_ids:
-            book = Book.objects.get(pk=book_id)
+            try:
+                book = Book.objects.get(pk=book_id)
+            except ObjectDoesNotExist:
+                messages.error(request, "Book not found.")
+                continue
+
             if book.user_id == request.user.id:
+                messages.error(request, f"You already have '{book.title}' checked out.")
+            elif book.on_hold and book.user_id != request.user.id:
+                messages.error(request, f"'{book.title}' is on hold by another user.")
+            else:
                 book.user_id = request.user.id
                 book.save()
                 messages.success(
                     request, f"Book '{book.title}' checked out successfully."
                 )
-                # Remove the hold
-                book.on_hold = False
-                book.hold_end = None
-                book.save()
-            else:
-                messages.error(
-                    request,
-                    f"You cannot check out the book '{book.title}' as it is not on hold for you.",
-                )
+
+                # Remove the hold if it was placed by the current user
+                if book.on_hold:
+                    book.on_hold = False
+                    book.hold_end = None
+                    book.save()
+        return HttpResponseRedirect(reverse("checked_out_books"))
+
     checked_out_books = Book.objects.filter(user_id=request.user.id)
     return render(
         request, "checked_out_books.html", {"checked_out_books": checked_out_books}
