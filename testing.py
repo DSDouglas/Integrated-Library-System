@@ -119,7 +119,9 @@ def main():
                                         9. Search by ISBN
                                         10. Put a book on hold
                                         11. Take book off hold
-                                        12. Exit
+                                        12. Search fees by user_id
+                                        13. Reports
+                                        14. Exit
                                         """
 
                         print(librarian_menu)
@@ -147,6 +149,10 @@ def main():
                             # Search by user_id
                             user_id = input("Enter user ID to search: ")
                             data_mover.search_user_id(user_id)
+                            pay_fees_option = input("Would you like to pay any overdue fees? (yes/no): ")
+                            if pay_fees_option.lower() == "yes":
+                                book_id = input("Enter the Book ID you would like to pay fees for: ")
+                                data_mover.pay_overdue_fees(user_id, book_id)
                         elif action == "5":
                             # Search by title
                             title = input("Enter title to search: ")
@@ -177,10 +183,32 @@ def main():
                             isbn = input("Enter the ISBN of the book to take off hold")
                             data_mover.take_book_off_hold(isbn)
                         elif action == "12":
+                            # Search fees by user_id
+                            user_id = input("Enter user ID to search for fees: ")
+                            data_mover.search_fees_by_user_id(user_id)
+                            pay_fees = input("Would you like to pay any overdue fees? (yes/no): ").lower()
+                            if pay_fees == "yes":
+                                book_id = input("Enter the Book ID you would like to pay fees for: ")
+                                data_mover.pay_overdue_fees(user_id, book_id)
+                        elif action == "13":
+                            total_books = data_mover.total_books_in_library()
+                            total_fees = data_mover.total_fees()
+                            total_patrons = data_mover.total_patrons()
+                            total_librarians = data_mover.total_librarians()
+                            total_admins = data_mover.total_admins()
+
+                            print(f"Total number of patrons: {total_patrons}")
+                            print(f"Total number of librarians: {total_librarians}")
+                            print(f"Total number of admins: {total_admins}")
+                            print(f"Total books in the library: {total_books}")
+                            print(f"Total fees collected: ${total_fees}")
+
+                        elif action == "14":
                             # Exit
                             break
                         else:
-                            print("Invalid choice. Please enter a number between 1 and 11.")
+                            print("Invalid choice. Please enter a number between 1 and 14.")
+
                 elif role == "Admin":
                     while True:
                         admin_menu = """
@@ -198,7 +226,9 @@ def main():
                                             11. Take book off hold
                                             12. Create a new librarian
                                             13. Create a new admin
-                                            14. Exit
+                                            14. Search fees by user_id
+                                            15. Reports
+                                            16. Exit
                                             """
 
                         print(admin_menu)
@@ -226,6 +256,10 @@ def main():
                             # Search by user_id
                             user_id = input("Enter user ID to search: ")
                             data_mover.search_user_id(user_id)
+                            pay_fees_option = input("Would you like to pay any overdue fees? (yes/no): ")
+                            if pay_fees_option.lower() == "yes":
+                                book_id = input("Enter the Book ID you would like to pay fees for: ")
+                                data_mover.pay_overdue_fees(user_id, book_id)
                         elif action == "5":
                             # Search by title
                             title = input("Enter title to search: ")
@@ -273,10 +307,32 @@ def main():
                             password = input("Enter Admin's password: ")
                             data_mover.create_librarian(first_name, last_name, email, user_id, password)
                         elif action == "14":
+                            # Search fees by user_id
+                            user_id = input("Enter user ID to search for fees: ")
+                            data_mover.search_fees_by_user_id(user_id)
+                            pay_fees = input("Would you like to pay any overdue fees? (yes/no): ").lower()
+                            if pay_fees == "yes":
+                                book_id = input("Enter the Book ID you would like to pay fees for: ")
+                                data_mover.pay_overdue_fees(user_id, book_id)
+                        elif action == "15":
+                            total_books = data_mover.total_books_in_library()
+                            total_fees = data_mover.total_fees()
+                            total_patrons = data_mover.total_patrons()
+                            total_librarians = data_mover.total_librarians()
+                            total_admins = data_mover.total_admins()
+
+                            print(f"Total number of patrons: {total_patrons}")
+                            print(f"Total number of librarians: {total_librarians}")
+                            print(f"Total number of admins: {total_admins}")
+                            print(f"Total books in the library: {total_books}")
+                            print(f"Total fees collected: ${total_fees}")
+
+                        elif action == "16":
+
                             # Exit
                             break
                         else:
-                            print("Invalid choice. Please enter a number between 1 and 13.")
+                            print("Invalid choice. Please enter a number between 1 and 16.")
 
                 elif role == "Patron":
                     patron_menu = """
@@ -299,6 +355,10 @@ def main():
                             # Search by user_id
                             user_id = input("Enter user ID to search: ")
                             data_mover.search_user_id(user_id)
+                            pay_fees_option = input("Would you like to pay any overdue fees? (yes/no): ")
+                            if pay_fees_option.lower() == "yes":
+                                book_id = input("Enter the Book ID you would like to pay fees for: ")
+                                data_mover.pay_overdue_fees(user_id, book_id)
                         elif action == "2":
                             # Search by title
                             title = input("Enter title to search: ")

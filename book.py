@@ -4,7 +4,7 @@ import pymysql
 
 class Book:
     def __init__(self, title, author, pub_year, publisher, genre, isbn, patron_id=None, on_hold=False,
-                 hold_end=None, checkout_date=None, due_date=None, fee=False, fee_amount=0.0):
+                 hold_end=None, checkout_date=None, due_date=None):
 
         self._title = str(title)
         self._author = str(author)
@@ -15,8 +15,6 @@ class Book:
         self._patron_id = str(patron_id) if patron_id else None
         self._checkout_date = checkout_date
         self._due_date = due_date
-        self._fee = fee
-        self._fee_amount = fee_amount
         self._on_hold = on_hold
         self._hold_end = hold_end
 
@@ -74,17 +72,6 @@ class Book:
     def due_date(self, due_date):
         self._due_date = due_date
 
-    def get_fee(self):
-        return self._fee
-
-    def set_fee(self, fee):
-        self._fee = fee
-
-    def get_fee_amount(self):
-        return self._fee_amount
-
-    def set_fee_amount(self, fee_amount):
-        self._fee_amount = fee_amount
 
     def get_hold_end(self):
         return self._hold_end
@@ -176,4 +163,4 @@ class Book:
                f"publisher={self.get_publisher()}, genre={self.get_genre()}, ISBN={self.get_isbn()}, " \
                f"patron_id={self.get_patron_id()}, checkout_date={self.get_checkout_date()}, " \
                f"due_date={self.get_due_date()}, " \
-               f"fee={self.get_fee()}, fee_amount={self.get_fee_amount()}, on_hold={self.get_on_hold()})"
+               f"on_hold={self.get_on_hold()})"

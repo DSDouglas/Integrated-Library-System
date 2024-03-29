@@ -80,10 +80,15 @@ class DataMover:
                 hold_end DATE,
                 checkout_date DATE,
                 due_date DATE,
-                fee BOOLEAN,
-                fee_amount DECIMAL(10, 2),
                 FOREIGN KEY (patron_id) REFERENCES Patron(patron_id)
-            )"""
+            )""",
+            """CREATE TABLE IF NOT EXISTS Fee (
+                fee_id INT AUTO_INCREMENT PRIMARY KEY,
+                book_id INT,
+                fee_amount DECIMAL(10, 2),
+                user_id VARCHAR(255),
+                FOREIGN KEY (book_id) REFERENCES Book(book_id)
+                );"""
 
         ]
 
@@ -397,6 +402,11 @@ class DataMover:
 
                         cursor.execute(update_query, (patron_id, checkout_date, due_date, isbn))
 
+                        # Calculate and update fees
+                        book = self.search_isbn(isbn)
+                        if book:
+                            self.calculate_fee(book[0])  # Assuming search_isbn returns a single book
+
                         print("Book checked out successfully!")
 
                 else:
@@ -409,46 +419,49 @@ class DataMover:
             # Commit the changes and close the database connection
             self.connection.commit()
 
-
-
     def check_in_book(self, isbn, user_id):
         try:
-            # Connect to the database
-            self.connect_to_database()
+            if not self.connection:
+                self.connect_to_database()
 
             with self.connection.cursor() as cursor:
-                # Search for patron_id based on user_id
-                cursor.execute("SELECT patron_id FROM Patron WHERE user_id = %s", (user_id,))
-                result = cursor.fetchone()
+                # Retrieve book information
+                cursor.execute("""
+                    SELECT * FROM Book
+                    WHERE isbn = %s AND patron_id = (SELECT patron_id FROM Patron WHERE user_id = %s)
+                """, (isbn, user_id))
+                book = cursor.fetchone()
 
-                if result:
-                    patron_id = result[0]
-
-                    # Update the Book entry in the database
+                if book:
+                    # Update book status and remove patron information
                     update_query = """
                     UPDATE Book
                     SET
                         patron_id = NULL,
+                        on_hold = FALSE,
+                        hold_end = NULL,
                         checkout_date = NULL,
                         due_date = NULL
-                    WHERE isbn = %s AND patron_id = %s
+                    WHERE isbn = %s
                     """
+                    cursor.execute(update_query, (isbn,))
 
-                    cursor.execute(update_query, (isbn, patron_id))
+                    # Calculate and update fees (including removing existing fees if book is not overdue)
+                    self.calculate_fee(book)
 
-                    print("Book checked in successfully!")
+                    # Commit the changes
+                    self.connection.commit()
 
+                    print("Book checked in successfully.")
                 else:
-                    print(f"User with user_id {user_id} not found.")
+                    print("Book not found or not checked out by the specified user.")
 
         except (pymysql.MySQLError, AttributeError) as error:
-            print(f"Failed to connect to the database: {error}")
-            # Handle other errors if necessary
+            print(f"Failed to check in book: {error}")
 
         finally:
-            # Close the database connection
-            self.connection.commit()
 
+            pass
 
     def search_isbn(self, isbn):
         """
@@ -525,10 +538,19 @@ class DataMover:
             return []
 
         finally:
-            # Close the database connection
-            self.close_connection()
+
+            self.connection.commit()
 
     def calculate_fee(self, book):
+        """
+        Calculate and update the overdue fee for a given book.
+
+        Args:
+            book (tuple): A tuple containing book information.
+
+        Returns:
+            None
+        """
         try:
             if not self.connection:
                 self.connect_to_database()
@@ -538,51 +560,59 @@ class DataMover:
                     days_overdue = (datetime.date.today() - book[11]).days
                     fee_amount = days_overdue * 0.5  # 50 cents per day overdue
 
-                    # Update fee and fee_amount in the database
-                    update_query = """
-                    UPDATE Book
-                    SET
-                        fee = %s,
-                        fee_amount = %s
-                    WHERE isbn = %s
-                    """
-                    cursor.execute(update_query, (True, fee_amount, book[6]))
+                    # Check if there's an existing fee record for this book and user
+                    cursor.execute("""
+                        SELECT fee_id FROM Fee
+                        WHERE book_id = %s AND user_id = %s
+                    """, (book[0], book[7]))
+                    existing_fee_id = cursor.fetchone()
+
+                    if existing_fee_id:
+                        # Update existing fee record
+                        update_query = """
+                        UPDATE Fee
+                        SET fee_amount = %s
+                        WHERE fee_id = %s
+                        """
+                        cursor.execute(update_query, (fee_amount, existing_fee_id[0]))
+                    else:
+                        # Insert a new fee record
+                        insert_query = """
+                        INSERT INTO Fee (book_id, fee_amount, user_id)
+                        VALUES (%s, %s, %s)
+                        """
+                        cursor.execute(insert_query, (book[0], fee_amount, book[7]))
 
                 else:
-                    # Update fee and fee_amount to 0.0 and False in the database
-                    update_query = """
-                    UPDATE Book
-                    SET
-                        fee = %s,
-                        fee_amount = %s
-                    WHERE isbn = %s
-                    """
-                    cursor.execute(update_query, (False, 0.0, book[6]))
-
-                # Commit the changes
-                self.connection.commit()
-
-        except pymysql.MySQLError as error:
-            print(f"Failed to connect to the database: {error}")
+                    # If book is not overdue, ensure there's no fee record
+                    cursor.execute("""
+                        DELETE FROM Fee
+                        WHERE book_id = %s AND user_id = %s
+                    """, (book[0], book[7]))
 
         finally:
-            # Do not close the connection here; it will be handled elsewhere
-            pass
+            self.connection.commit()
 
     def search_user_id(self, user_id):
+        """
+        Search for books associated with a specific user ID.
+
+        Args:
+            user_id (int): The user ID to search for.
+
+        Returns:
+            list: A list of books associated with the user ID, if found. Otherwise, an empty list.
+        """
         try:
             if not self.connection:
                 self.connect_to_database()
 
             with self.connection.cursor() as cursor:
-                # Search for patron_id based on user_id
                 cursor.execute("SELECT patron_id FROM Patron WHERE user_id = %s", (user_id,))
                 result = cursor.fetchone()
 
                 if result:
                     patron_id = result[0]
-
-                    # Execute the query to get books associated with the patron_id
                     cursor.execute("SELECT * FROM Book WHERE patron_id = %s", (patron_id,))
                     books = cursor.fetchall()
 
@@ -592,20 +622,15 @@ class DataMover:
                             "Book ID", "Title", "Author", "ISBN", "Publisher", "Fee Amount"))
                         print("-" * 100)
 
-                        # Calculate and update fees for each book
                         for book in books:
                             self.calculate_fee(book)
-
-                        # Fetch updated book information after calculating fees
-                        cursor.execute("SELECT * FROM Book WHERE patron_id = %s", (patron_id,))
-                        books = cursor.fetchall()
-
-                        # Print the table with updated fee information
-                        for book in books:
+                            cursor.execute("SELECT fee_amount FROM Fee WHERE book_id = %s AND user_id = %s",
+                                           (book[0], patron_id))
+                            fee_amount = cursor.fetchone()[0] if cursor.rowcount > 0 else 0.0
+                            fee_amount_str = "${:.2f}".format(fee_amount)
                             status = "Available" if not book[10] else "Checked Out"
-                            fee_amount = "${:.2f}".format(book[13]) if book[12] else "$0.00"
                             print("{:<8} | {:<25} | {:<20} | {:<15} | {:<15} | {}".format(
-                                book[0], book[1], book[2], book[6], book[4], fee_amount, status))
+                                book[0], book[1], book[2], book[6], book[4], fee_amount_str, status))
 
                         return books
                     else:
@@ -621,8 +646,7 @@ class DataMover:
             return []
 
         finally:
-            # Do not close the connection here; it will be handled elsewhere
-            pass
+            self.connection.commit()
 
     def search_author(self, author):
         """
@@ -661,8 +685,7 @@ class DataMover:
             return []
 
         finally:
-            # Close the database connection
-            self.close_connection()
+            pass
 
     def search_publisher(self, publisher):
         """
@@ -700,8 +723,7 @@ class DataMover:
             return []
 
         finally:
-            # Close the database connection
-            self.close_connection()
+            pass
 
     def search_title(self, title):
         """
@@ -739,8 +761,7 @@ class DataMover:
             return []
 
         finally:
-            # Close the database connection
-            self.close_connection()
+            pass
 
     def put_book_on_hold(self, isbn, user_id):
         """
@@ -819,6 +840,166 @@ class DataMover:
         finally:
             # Close the database connection
             self.close_connection()
+
+    def pay_overdue_fees(self, user_id, book_id):
+        """
+        Pay overdue fees for a specific book associated with a user.
+
+        Args:
+            user_id (int): The user ID associated with the fees.
+            book_id (int): The book ID for which the fees are being paid.
+
+        Returns:
+            None
+        """
+        try:
+            if not self.connection:
+                self.connect_to_database()
+
+            with self.connection.cursor() as cursor:
+
+                cursor.execute("SELECT patron_id FROM Patron WHERE user_id = %s", (user_id,))
+                result = cursor.fetchone()
+                # Check if the fee record exists for the given book_id and user_id
+                cursor.execute("SELECT * FROM Fee WHERE book_id = %s AND user_id = %s", (book_id, result))
+                fee_record = cursor.fetchone()
+
+                if fee_record:
+                    # Delete the fee record
+                    cursor.execute("DELETE FROM Fee WHERE book_id = %s AND user_id = %s", (book_id, result))
+                    print("Overdue fees for book {} paid successfully.".format(book_id))
+                else:
+                    print("No overdue fees found for book {} and user {}.".format(book_id, user_id))
+
+        except pymysql.MySQLError as error:
+            print("Failed to pay overdue fees: {}".format(error))
+
+        finally:
+            # Commit the transaction
+            self.connection.commit()
+
+    def search_fees_by_user_id(self, user_id):
+        """
+        Search for fees associated with a user by their user ID.
+
+        Args:
+            user_id (int): The user ID to search for.
+
+        Returns:
+            list: A list of tuples containing fee information if fees are found, otherwise an empty list.
+        """
+        try:
+            if not self.connection:
+                self.connect_to_database()
+
+            with self.connection.cursor() as cursor:
+                cursor.execute("SELECT patron_id FROM Patron WHERE user_id = %s", (user_id,))
+                result = cursor.fetchone()
+                cursor.execute("SELECT * FROM Fee WHERE user_id = %s", (result,))
+                fees = cursor.fetchall()
+
+                if fees:
+                    print("\nFound fees for user with user_id {}:\n".format(user_id))
+                    print("{:<8} | {:<8} | {:<10} | {}".format("Fee ID", "Book ID", "Amount", "Patron ID"))
+                    print("-" * 50)
+
+                    for fee in fees:
+                        print("{:<8} | {:<8} | {:<10} | {}".format(
+                            fee[0], fee[1], "${:.2f}".format(fee[2]), fee[3]))
+
+                    return fees
+                else:
+                    print("No fees found for user with user_id {}.".format(user_id))
+                    return []
+
+        except pymysql.MySQLError as error:
+            print("Failed to connect to the database: {}".format(error))
+            return []
+
+        finally:
+            pass
+
+    def total_books_in_library(self):
+        """
+        Retrieves the total amount of fees collected from users.
+
+        Returns:
+            float: The total amount of fees collected.
+        """
+
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute("SELECT COUNT(*) FROM Book")
+                result = cursor.fetchone()
+                return result[0] if result else 0
+        except pymysql.MySQLError as error:
+            print(f"Failed to fetch total books: {error}")
+            return 0
+
+    def total_fees(self):
+        """
+        Retrieves the total amount of fees owed by users.
+
+        Returns:
+            float: The total amount of fees owed.
+        """
+
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute("SELECT SUM(fee_amount) FROM Fee")
+                result = cursor.fetchone()
+                return result[0] if result else 0
+        except pymysql.MySQLError as error:
+            print(f"Failed to fetch total fees: {error}")
+            return 0
+
+    def total_patrons(self):
+        """
+        Retrieves the total number of patrons in the library.
+
+        Returns:
+            int: The total number of patrons.
+        """
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute("SELECT COUNT(*) FROM Patron")
+                result = cursor.fetchone()
+                return result[0] if result else 0
+        except pymysql.MySQLError as error:
+            print(f"Failed to fetch total patrons: {error}")
+            return 0
+
+    def total_librarians(self):
+        """
+        Retrieves the total number of librarians in the library.
+
+        Returns:
+            int: The total number of librarians.
+        """
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute("SELECT COUNT(*) FROM Librarian")
+                result = cursor.fetchone()
+                return result[0] if result else 0
+        except pymysql.MySQLError as error:
+            print(f"Failed to fetch total librarians: {error}")
+            return 0
+
+    def total_admins(self):
+        """
+        Retrieves the total number of administrators in the library.
+
+        Returns:
+            int: The total number of administrators.
+        """
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute("SELECT COUNT(*) FROM Admin")
+                result = cursor.fetchone()
+                return result[0] if result else 0
+        except pymysql.MySQLError as error:
+            print(f"Failed to fetch total admins: {error}")
+            return 0
 
     def close_connection(self):
         """
