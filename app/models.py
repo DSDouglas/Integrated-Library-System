@@ -11,7 +11,7 @@ class Admin(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'Admin'
+        db_table = "Admin"
 
 
 class Book(models.Model):
@@ -22,17 +22,19 @@ class Book(models.Model):
     publisher = models.CharField(max_length=255, blank=True, null=True)
     genre = models.CharField(max_length=255, blank=True, null=True)
     isbn = models.BigIntegerField(blank=True, null=True)
-    user = models.ForeignKey('Patron', models.DO_NOTHING, blank=True, null=True)
+    user = models.ForeignKey("Patron", models.DO_NOTHING, blank=True, null=True)
     on_hold = models.IntegerField(blank=True, null=True)
     hold_end = models.DateField(blank=True, null=True)
     checkout_date = models.DateField(blank=True, null=True)
     due_date = models.DateField(blank=True, null=True)
     fee = models.IntegerField(blank=True, null=True)
-    fee_amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    fee_amount = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True
+    )
 
     class Meta:
         managed = False
-        db_table = 'Book'
+        db_table = "Book"
 
 
 class Librarian(models.Model):
@@ -45,7 +47,7 @@ class Librarian(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'Librarian'
+        db_table = "Librarian"
 
 
 class Patron(models.Model):
@@ -58,4 +60,4 @@ class Patron(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'Patron'
+        db_table = "Patron"
