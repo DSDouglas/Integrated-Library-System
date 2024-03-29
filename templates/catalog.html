@@ -18,6 +18,7 @@
                     <th scope="col">Genre</th>
                     <th scope="col">ISBN</th>
                     <th scope="col">User</th>
+                    <th scope="col">Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -32,7 +33,19 @@
                     <td>{{ item.author }}</td>
                     <td>{{ item.genre }}</td>
                     <td>{{ item.isbn }}</td>
-                    <td>{{ item.user_id }}</td>                
+                    <td>{{ item.user_id }}</td>     
+                    <td>
+                        {% if item.on_hold %}
+                            <span class="badge bg-warning">On Hold</span>
+                            {% if item.hold_end %}
+                                <br>Hold Expires: {{ item.hold_end }}
+                            {% endif %}
+                        {% elif item.user_id %}
+                            <span class="badge bg-secondary">Checked Out</span>
+                        {% else %}
+                            <a href="{% url 'place_hold' book_id=item.book_id %}" class="btn btn-primary">Place Hold</a>
+                        {% endif %}
+                    </td>      
                 </tr>
                 {% endfor %}
             </tbody>

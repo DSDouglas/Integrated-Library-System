@@ -10,4 +10,5 @@ urlpatterns = [
     path('checked-out-books/', views.checked_out_books_view, name='checked_out_books'),
     path('checkin/', views.checkin_view, name='checkin'),
     path('accounts/create-account', views.create_account, name ='create_account'),
+    path('place-hold/<int:book_id>/', views.place_hold_view, name='place_hold'),
 ]
