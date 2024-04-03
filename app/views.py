@@ -1,4 +1,4 @@
-import wikipediaapi
+import requests
 from datetime import datetime, timedelta
 from random import randint
 
@@ -16,42 +16,33 @@ from django.urls import reverse
 from .models import Book
 
 
-def get_book_description(title):
-    wiki_wiki = wikipediaapi.Wikipedia("Library-System (conman0503@gmail.com)", "en")
-    page = wiki_wiki.page(title)
-    if page.exists():
-        return page.summary
+def get_book_description(isbn):
+    url = (
+        f"https://openlibrary.org/api/books?bibkeys=ISBN:{isbn}&jscmd=data&format=json"
+    )
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        if f"ISBN:{isbn}" in data:
+            return data[f"ISBN:{isbn}"].get("title", "No description available")
     return "No description available"
 
 
 def get_book_of_the_day():
-    # Check if the book of the day is cached
     book = cache.get("book_of_the_day")
     if not book:
-        # If not cached, select a random book from the database
         total_books = Book.objects.count()
         random_book_index = randint(0, total_books - 1)
         book = Book.objects.all()[random_book_index]
-        book.description = get_book_description(book.title)
-        # Cache the book with an expiration time of one day
+        book.description = get_book_description(book.isbn)
         cache.set("book_of_the_day", book, timeout=86400)
     return book
 
 
 @login_required
 def place_hold_view(request, book_id):
-    user_id = request.user.id
-    if Book.objects.filter(user_id=user_id, on_hold=True).count() >= 4:
-        messages.error(request, "You can only hold up to 4 books at a time.")
-        return HttpResponseRedirect(reverse("catalog"))
-
-    try:
-        book = Book.objects.get(pk=book_id)
-    except ObjectDoesNotExist:
-        messages.error(request, "Book not found.")
-        return HttpResponseRedirect(reverse("catalog"))
-
-    if book.user_id == user_id:
+    book = Book.objects.get(pk=book_id)
+    if book.user_id == request.user.id:
         messages.error(
             request, "You cannot place a hold on a book you already have checked out."
         )
@@ -60,10 +51,10 @@ def place_hold_view(request, book_id):
     else:
         book.on_hold = True
         book.hold_end = datetime.now() + timedelta(weeks=2)
-        book.user_id = user_id
+        book.user_id = request.user.id  # Set user_id
         book.save()
         messages.success(request, "Book placed on hold successfully.")
-    return HttpResponseRedirect(reverse("catalog"))
+        return HttpResponseRedirect(reverse("catalog"))  # Redirect back to catalog page
 
 
 def index(request):
@@ -80,30 +71,22 @@ def checked_out_books_view(request):
     if request.method == "POST":
         book_ids = request.POST.getlist("books")
         for book_id in book_ids:
-            try:
-                book = Book.objects.get(pk=book_id)
-            except ObjectDoesNotExist:
-                messages.error(request, "Book not found.")
-                continue
-
+            book = Book.objects.get(pk=book_id)
             if book.user_id == request.user.id:
-                messages.error(request, f"You already have '{book.title}' checked out.")
-            elif book.on_hold and book.user_id != request.user.id:
-                messages.error(request, f"'{book.title}' is on hold by another user.")
-            else:
                 book.user_id = request.user.id
                 book.save()
                 messages.success(
                     request, f"Book '{book.title}' checked out successfully."
                 )
-
-                # Remove the hold if it was placed by the current user
-                if book.on_hold:
-                    book.on_hold = False
-                    book.hold_end = None
-                    book.save()
-        return HttpResponseRedirect(reverse("checked_out_books"))
-
+                # Remove the hold
+                book.on_hold = False
+                book.hold_end = None
+                book.save()
+            else:
+                messages.error(
+                    request,
+                    f"You cannot check out the book '{book.title}' as it is not on hold for you.",
+                )
     checked_out_books = Book.objects.filter(user_id=request.user.id)
     return render(
         request, "checked_out_books.html", {"checked_out_books": checked_out_books}
