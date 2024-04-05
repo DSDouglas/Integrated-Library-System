@@ -9,6 +9,9 @@
                 <th>Author</th>
                 <th>Genre</th>
                 <th>ISBN</th>
+                <th>Checkout Date</th>
+                <th>Due Date</th>
+                <th>Fees</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -20,6 +23,10 @@
                 <td>{{ item.author }}</td>
                 <td>{{ item.genre }}</td>
                 <td>{{ item.isbn }}</td>
+                <td>{{ item.checkout_date }}</td>
+                <td>{{ item.due_date }}</td>
+                <td>{{ item.fee_amount }}</td>
+
                 <td>
                     <form method="post" action="{% url 'checkin' %}">
                         {% csrf_token %}

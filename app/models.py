@@ -27,10 +27,6 @@ class Book(models.Model):
     hold_end = models.DateField(blank=True, null=True)
     checkout_date = models.DateField(blank=True, null=True)
     due_date = models.DateField(blank=True, null=True)
-    fee = models.IntegerField(blank=True, null=True)
-    fee_amount = models.DecimalField(
-        max_digits=10, decimal_places=2, blank=True, null=True
-    )
 
     class Meta:
         managed = False
@@ -61,3 +57,16 @@ class Patron(models.Model):
     class Meta:
         managed = False
         db_table = "Patron"
+
+
+class Fee(models.Model):
+    fee_id = models.AutoField(primary_key=True)
+    book = models.ForeignKey(Book, models.DO_NOTHING, blank=True, null=True)
+    fee_amount = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True
+    )
+    user_id = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "Fee"

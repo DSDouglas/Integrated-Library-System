@@ -67,27 +67,46 @@ def catalog(request):
     return render(request, "catalog.html", {"books": books})
 
 
+from django.utils import timezone
+
+
+@login_required
 def checked_out_books_view(request):
     if request.method == "POST":
         book_ids = request.POST.getlist("books")
         for book_id in book_ids:
-            book = Book.objects.get(pk=book_id)
-            if book.user_id == request.user.id:
+            try:
+                book = Book.objects.get(pk=book_id)
+            except ObjectDoesNotExist:
+                messages.error(request, "Book not found.")
+                continue
+
+            if book.checkout_date and book.user_id == request.user.id:
+                messages.error(request, f"You already have '{book.title}' checked out.")
+            elif book.checkout_date and book.user_id is not None:
+                messages.error(
+                    request, f"'{book.title}' is already checked out by another user."
+                )
+            else:
+                # Remove the hold if it was placed by the current user
+                if book.on_hold and book.user_id == request.user.id:
+                    book.on_hold = False
+                    book.hold_end = None
+                    book.save()
+
+                # Check out the book
                 book.user_id = request.user.id
+                book.checkout_date = timezone.now()
                 book.save()
                 messages.success(
                     request, f"Book '{book.title}' checked out successfully."
                 )
-                # Remove the hold
-                book.on_hold = False
-                book.hold_end = None
-                book.save()
-            else:
-                messages.error(
-                    request,
-                    f"You cannot check out the book '{book.title}' as it is not on hold for you.",
-                )
-    checked_out_books = Book.objects.filter(user_id=request.user.id)
+
+        return HttpResponseRedirect(reverse("checked_out_books"))
+
+    checked_out_books = Book.objects.filter(
+        user_id=request.user.id, checkout_date__isnull=False
+    )
     return render(
         request, "checked_out_books.html", {"checked_out_books": checked_out_books}
     )
@@ -98,6 +117,9 @@ def checkin_view(request):
         book_id = request.POST.get("book_id")
         book = Book.objects.get(pk=book_id)
         book.user_id = None
+        book.on_hold = False
+        book.hold_end = None
+        book.checkout_date = None
         book.save()
         return HttpResponseRedirect(
             reverse("checked_out_books")
