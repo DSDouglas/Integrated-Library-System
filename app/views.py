@@ -13,7 +13,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import Book
+from .models import Book, Fee
 
 
 def get_book_description(isbn):
@@ -37,6 +37,15 @@ def get_book_of_the_day():
         book.description = get_book_description(book.isbn)
         cache.set("book_of_the_day", book, timeout=86400)
     return book
+
+
+def calculate_fee(due_date):
+    # Calculate the fee amount based on the number of days overdue
+    days_overdue = (timezone.now().date() - due_date).days
+    fee_amount = max(
+        0, days_overdue * 0.5
+    )  # Charge 50 cents per day, capped at 0 if not overdue
+    return fee_amount
 
 
 @login_required
@@ -97,6 +106,7 @@ def checked_out_books_view(request):
                 # Check out the book
                 book.user_id = request.user.id
                 book.checkout_date = timezone.now()
+                book.due_date = datetime.now() + timedelta(weeks=2)
                 book.save()
                 messages.success(
                     request, f"Book '{book.title}' checked out successfully."
@@ -107,6 +117,22 @@ def checked_out_books_view(request):
     checked_out_books = Book.objects.filter(
         user_id=request.user.id, checkout_date__isnull=False
     )
+
+    for book in checked_out_books:
+        if book.due_date < timezone.now().date():
+            # Book is overdue, calculate the fee
+            fee_amount = calculate_fee(book.due_date)
+            # Update or create a Fee object for the user and book
+            fee, created = Fee.objects.update_or_create(
+                book=book, user_id=request.user.id, defaults={"fee_amount": fee_amount}
+            )
+            if not created:
+                fee.fee_amount = fee_amount
+                fee.save()
+    checked_out_books = Book.objects.filter(
+        user_id=request.user.id, checkout_date__isnull=False
+    ).prefetch_related("fee_set")
+
     return render(
         request, "checked_out_books.html", {"checked_out_books": checked_out_books}
     )
@@ -119,8 +145,11 @@ def checkin_view(request):
         book.user_id = None
         book.on_hold = False
         book.hold_end = None
-        book.checkout_date = None
         book.save()
+
+        # Delete the corresponding fee item
+        Fee.objects.filter(book=book).delete()
+
         return HttpResponseRedirect(
             reverse("checked_out_books")
         )  # Redirect to checked out books page

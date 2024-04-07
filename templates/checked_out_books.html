@@ -9,9 +9,8 @@
                 <th>Author</th>
                 <th>Genre</th>
                 <th>ISBN</th>
-                <th>Checkout Date</th>
                 <th>Due Date</th>
-                <th>Fees</th>
+                <th>Fee</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -23,10 +22,17 @@
                 <td>{{ item.author }}</td>
                 <td>{{ item.genre }}</td>
                 <td>{{ item.isbn }}</td>
-                <td>{{ item.checkout_date }}</td>
-                <td>{{ item.due_date }}</td>
-                <td>{{ item.fee_amount }}</td>
-
+                <td>{{ item.due_date|default:"Not set" }}</td>
+                <td>{{ item.fee_set.first.fee_amount|default:"No fee" }}</td>
+                {% if item.fee_set.first.fee_amount > 0 %}
+                <td>
+                    <form method="post" action="{% url 'checkin' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="book_id" value="{{ item.book_id }}">
+                        <button type="submit" class="btn btn-danger">Pay Fee</button>
+                    </form>
+                </td>
+                {% else %}
                 <td>
                     <form method="post" action="{% url 'checkin' %}">
                         {% csrf_token %}
@@ -34,6 +40,7 @@
                         <button type="submit" class="btn btn-primary">Check In</button>
                     </form>
                 </td>
+                {% endif %}
             </tr>
             {% endfor %}
         </tbody>
