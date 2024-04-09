@@ -16,15 +16,25 @@ from django.urls import reverse
 from .models import Book, Fee
 
 
-def get_book_description(isbn):
-    url = (
-        f"https://openlibrary.org/api/books?bibkeys=ISBN:{isbn}&jscmd=data&format=json"
-    )
+def get_book_description(title):
+    url = f"https://www.googleapis.com/books/v1/volumes?q=intitle:{title}"
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
-        if f"ISBN:{isbn}" in data:
-            return data[f"ISBN:{isbn}"].get("title", "No description available")
+        if "items" in data and len(data["items"]) > 0:
+            for item in data["items"]:
+                volume_info = item.get("volumeInfo")
+                if volume_info:
+                    title = volume_info.get("title", "No title available")
+                    description = volume_info.get(
+                        "description", "No description available"
+                    )
+                    if description:
+                        return f"{title}: {description}"
+            # If no description is found, return the first title
+            first_item = data["items"][0]["volumeInfo"]
+            title = first_item.get("title", "No title available")
+            return title
     return "No description available"
 
 
@@ -34,7 +44,7 @@ def get_book_of_the_day():
         total_books = Book.objects.count()
         random_book_index = randint(0, total_books - 1)
         book = Book.objects.all()[random_book_index]
-        book.description = get_book_description(book.isbn)
+        book.description = get_book_description(book.title)
         cache.set("book_of_the_day", book, timeout=86400)
     return book
 
