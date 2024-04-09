@@ -1,68 +1,70 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% block content %}
-<div class="row">
+  <div class="row">
     <div class="col">
-        <h1>Checked Out Books</h1>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Book</th>
-                    <th>Title</th>
-                    <th>Author</th>
-                    <th>Genre</th>
-                    <th>ISBN</th>
-                    <th>Due Date</th>
-                    <th>Fee</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in checked_out_books %}
-                <tr>
-                    <td><img src="https://book-covers-public.s3.amazonaws.com/{{ item.isbn }}.jpg" alt="{{ item.title }}" style="width: 100px; height: 150px;"></td>
-                    <td>{{ item.title }}</td>
-                    <td>{{ item.author }}</td>
-                    <td>{{ item.genre }}</td>
-                    <td>{{ item.isbn }}</td>
-                    <td>{{ item.due_date|default:"Not set" }}</td>
-                    <td>{{ item.fee_set.first.fee_amount|default:"No fee" }}</td>
-                    <td>
-                        {% if item.fee_set.first.fee_amount > 0 %}
-                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#feeModal{{ item.book_id }}">Pay Fee</button>
-                        {% else %}
-                        <form method="post" action="{% url 'checkin' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="book_id" value="{{ item.book_id }}">
-                            <button type="submit" class="btn btn-primary">Check In</button>
-                        </form>
-                        {% endif %}
-                    </td>
-                </tr>
-                <!-- Fee Modal -->
-                <div class="modal fade" id="feeModal{{ item.book_id }}" tabindex="-1" aria-labelledby="feeModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="feeModalLabel">Pay Fee</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p>You have a fee of ${{ item.fee_set.first.fee_amount }} for '{{ item.title }}'. Please pay the fee to check in the book.</p>
-                            </div>
-                            <div class="modal-footer">
-                                <form method="post" action="{% url 'checkin' %}">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="book_id" value="{{ item.book_id }}">
-                                    <button type="submit" class="btn btn-danger">Pay Fee</button>
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+      <h1>Checked Out Books</h1>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Book</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Genre</th>
+            <th>ISBN</th>
+            <th>Due Date</th>
+            <th>Fee</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in checked_out_books %}
+            <tr>
+              <td>
+                <img src="https://book-covers-public.s3.amazonaws.com/{{ item.isbn }}.jpg" alt="{{ item.title }}" style="width: 100px; height: 150px;" />
+              </td>
+              <td>{{ item.title }}</td>
+              <td>{{ item.author }}</td>
+              <td>{{ item.genre }}</td>
+              <td>{{ item.isbn }}</td>
+              <td>{{ item.due_date|default:'Not set' }}</td>
+              <td>{{ item.fee_set.first.fee_amount|default:'No fee' }}</td>
+              <td>
+                {% if item.fee_set.first.fee_amount > 0 %}
+                  <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#feeModal{{ item.book_id }}">Pay Fee</button>
+                {% else %}
+                  <form method="post" action="{% url 'checkin' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="book_id" value="{{ item.book_id }}" />
+                    <button type="submit" class="btn btn-primary">Check In</button>
+                  </form>
+                {% endif %}
+              </td>
+            </tr>
+            <!-- Fee Modal -->
+            <div class="modal fade" id="feeModal{{ item.book_id }}" tabindex="-1" aria-labelledby="feeModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="feeModalLabel">Pay Fee</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>You have a fee of ${{ item.fee_set.first.fee_amount }} for '{{ item.title }}'. Please pay the fee to check in the book.</p>
+                  </div>
+                  <div class="modal-footer">
+                    <form method="post" action="{% url 'checkin' %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="book_id" value="{{ item.book_id }}" />
+                      <button type="submit" class="btn btn-danger">Pay Fee</button>
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </form>
+                  </div>
                 </div>
-                {% endfor %}
-            </tbody>
-        </table>
+              </div>
+            </div>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
-</div>
-{% endblock content %}
+  </div>
+{% endblock %}
