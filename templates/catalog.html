@@ -1,39 +1,41 @@
 {% extends "base.html" %}
 {% block content %}
-    <form id="checkout-form" method="post" action="{% url 'checked_out_books' %}">
+<div class="row">
+    <div class="col">
+        <form id="checkout-form" method="post" action="{% url 'checked_out_books' %}">
         {% csrf_token %}
+        <h1>Catalog</h1>
         <table id="book-data-table"
-               class="table table-striped table-bordered table-sm"
-               cellspacing="0"
-               width="100%">
-            <thead> 
+               class="table table-striped table-bordered"
+               style="width:100%">
+            <thead>
                 <tr>
                     {% if user.is_authenticated %}
-                    <th scope="col">Select</th>
+                    <th>Select</th>
                     {% endif %}
-                    <th scope="col">Cover</th>
-                    <th scope="col">#</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Author</th>
-                    <th scope="col">Genre</th>
-                    <th scope="col">ISBN</th>
-                    <th scope="col">User</th>
-                    <th scope="col">Status</th>
+                    <th>Cover</th>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Author</th>
+                    <th>Genre</th>
+                    <th>ISBN</th>
+                    <th>User</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
                 {% for item in books %}
-                <tr> 
+                <tr>
                     {% if user.is_authenticated %}
                     <td><input type="checkbox" name="books" value="{{ item.book_id }}"></td>
                     {% endif %}
-                    <td><img src="https://book-covers-public.s3.amazonaws.com/{{ item.isbn }}.jpg" alt="{{ item.title }}" width="100" height="150"></td>
+                    <td><img src="https://book-covers-public.s3.amazonaws.com/{{ item.isbn }}.jpg" alt="{{ item.title }}" style="width: 100px; height: 150px;"></td>
                     <td>{{ item.book_id }}</td>
                     <td>{{ item.title }}</td>
                     <td>{{ item.author }}</td>
                     <td>{{ item.genre }}</td>
                     <td>{{ item.isbn }}</td>
-                    <td>{{ item.user_id }}</td>     
+                    <td>{{ item.user_id }}</td>
                     <td>
                         {% if item.on_hold %}
                             <span class="badge bg-warning">On Hold</span>
@@ -45,20 +47,58 @@
                         {% else %}
                             <a href="{% url 'place_hold' book_id=item.book_id %}" class="btn btn-primary">Place Hold</a>
                         {% endif %}
-                    </td>      
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
         {% if user.is_authenticated %}
-        <button type="submit" class="btn btn-primary">Checkout</button>
+        <button type="submit" form="checkout-form" class="btn btn-primary">Checkout</button>
         {% endif %}
     </form>
+
+    {% comment %} <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="checkout-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Checkout Success</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Books have been checked out successfully.
+            </div>
+        </div>
+    </div>    
+    </div>
+</div> {% endcomment %}
 {% endblock content %}
+
 {% block script %}
-    <script>
+<script>
+$(document).ready(function() {
+    $('#book-data-table').DataTable();
+});
+</script>
+
+{% comment %} <script>
     $(document).ready(function () {
-        $('#book-data-table').DataTable();
+        $('#checkout-form').submit(function (event) {
+            event.preventDefault();
+            var form = $(this);
+            $.ajax({
+                type: form.attr('method'),
+                url: form.attr('action'),
+                data: form.serialize(),
+                success: function (data) {
+                    $('#checkout-toast').toast('show');
+                },
+                error: function (data) {
+                }
+            });
+        });
+
+        $('#checkout-toast').toast({
+            delay: 2000
+        });
     });
-    </script>
+    </script> {% endcomment %}
 {% endblock script %}
