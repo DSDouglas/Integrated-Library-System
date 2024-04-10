@@ -12,6 +12,7 @@ from django.core.cache import cache
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.utils import timezone
 
 from .models import Book, Fee
 
@@ -84,9 +85,6 @@ def index(request):
 def catalog(request):
     books = Book.objects.all()
     return render(request, "catalog.html", {"books": books})
-
-
-from django.utils import timezone
 
 
 @login_required
