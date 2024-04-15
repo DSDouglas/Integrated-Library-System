@@ -51,6 +51,10 @@ def get_book_of_the_day():
 
 
 def calculate_fee(due_date):
+    # Ensure due_date is a date object
+    if isinstance(due_date, datetime):
+        due_date = due_date.date()
+
     # Calculate the fee amount based on the number of days overdue
     days_overdue = (timezone.now().date() - due_date).days
     fee_amount = max(
