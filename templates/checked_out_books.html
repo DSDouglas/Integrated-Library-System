@@ -49,10 +49,10 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div class="modal-body">
-                    <p>You have a fee of ${{ item.fee_set.first.fee_amount }} for '{{ item.title }}'. Please pay the fee to check in the book.</p>
+                    <p>You have a fee of ${{ item.fee_set.first.fee_amount }} for '{{ item.title }}'. Please confirm that you want to pay the fee to check in the book.</p>
                   </div>
                   <div class="modal-footer">
-                    <form method="post" action="{% url 'checkin' %}">
+                    <form id="payFeeForm{{ item.book_id }}" method="post" action="{% url 'checkin' %}">
                       {% csrf_token %}
                       <input type="hidden" name="book_id" value="{{ item.book_id }}" />
                       <button type="submit" class="btn btn-danger">Pay Fee</button>
@@ -67,4 +67,29 @@
       </table>
     </div>
   </div>
+{% endblock %}
+
+{% block script %}
+  <script>
+    $(document).ready(function () {
+      $('#payFeeForm{{ item.book_id }}').submit(function (e) {
+        e.preventDefault()
+        var form = $(this)
+        var url = form.attr('action')
+    
+        $.ajax({
+          type: 'POST',
+          url: url,
+          data: form.serialize(),
+          success: function (data) {
+            // Reload the page or update the table to reflect the changes
+            location.reload()
+          },
+          error: function (xhr, errmsg, err) {
+            console.log(xhr.status + ': ' + xhr.responseText) // Log any errors
+          }
+        })
+      })
+    })
+  </script>
 {% endblock %}
