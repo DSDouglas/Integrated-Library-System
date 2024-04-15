@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Admin(models.Model):
@@ -22,14 +23,14 @@ class Book(models.Model):
     publisher = models.CharField(max_length=255, blank=True, null=True)
     genre = models.CharField(max_length=255, blank=True, null=True)
     isbn = models.BigIntegerField(blank=True, null=True)
-    user = models.ForeignKey("Patron", models.DO_NOTHING, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     on_hold = models.IntegerField(blank=True, null=True)
     hold_end = models.DateField(blank=True, null=True)
     checkout_date = models.DateField(blank=True, null=True)
     due_date = models.DateField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = "Book"
 
 
