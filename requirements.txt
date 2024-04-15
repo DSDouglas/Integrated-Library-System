@@ -1,2 +1,3 @@
-pymysql
 django
+pymysql
+gunicorn
