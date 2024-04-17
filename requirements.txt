@@ -1,3 +1,4 @@
 django
 pymysql
 gunicorn
+requests

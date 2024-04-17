@@ -11,12 +11,15 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 import os
+import json
 from pathlib import Path
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+with open(os.path.join(BASE_DIR, "config.json")) as config_file:
+    config = json.load(config_file)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -28,12 +31,18 @@ SECRET_KEY = os.getenv(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DJANGO_DEBUG", True)
 
-ALLOWED_HOSTS = ["18.204.180.15", "127.0.0.1", "localhost", "group7.teacake.dev"]
+DEBUG = config.get("DEBUG", False)
+# SECRET_KEY = config.get("SECRET_KEY", "")
+ALLOWED_HOSTS = config.get("ALLOWED_HOSTS", [])
 
 LOGIN_REDIRECT_URL = "/"
 
+CSRF_COOKIE_SECURE = False
+
+SECURE_SSL_REDIRECT = False
+
+SESSION_COOKIE_SECURE = False
 
 # Application definition
 
@@ -78,31 +87,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "backend.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'librarysystem',
-#         'USER': 'connor_user',
-#         'PASSWORD': 'c0nILSg7',
-#         'HOST': 'ils-db-instance.cti8om2oa2p6.us-east-1.rds.amazonaws.com',
-#         'PORT': '3306',
-#     }
-# }
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": "librarysystem",
-        "USER": "connor_user",
-        "PASSWORD": "c0nILSg7",
-        "HOST": "localhost",
-        "PORT": "",
-    }
-}
+DATABASES = config.get("DATABASES", {})
 
 
 # Password validation
@@ -145,11 +133,3 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# Cache config
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
-#         "LOCATION": "/var/tmp/django_cache",
-#     }
-# }
