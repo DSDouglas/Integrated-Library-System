@@ -1,9 +1,10 @@
 from django.test import TestCase
+from django.core.management import call_command
 from django.urls import reverse
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from .models import Book, Fee
-from .views import calculate_fee
+from .views import calculate_fee, get_book_description
 
 
 class LibraryAppTests(TestCase):
@@ -11,6 +12,10 @@ class LibraryAppTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="testuser", password="12345")
         self.book = Book.objects.create(title="Test Book", author="Test Author")
+
+    def test_get_book_description(self):
+        description = get_book_description("Python")
+        self.assertTrue(len(description) > 0)
 
     def test_calculate_fee(self):
         due_date = datetime.now() - timedelta(days=5)
