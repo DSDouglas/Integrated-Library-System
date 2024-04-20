@@ -25,12 +25,12 @@ The Library Management System is a Python-based project designed to handle vario
 
 Deployed Software: [Link to Deployed Software](http://18.204.180.15:8000/)
 
-### Contributors
+## Contributors
 - Denitri Douglas
 - Phoebe Andrews
 - Connor Nelson
 
-### Software Requirements
+## Software Requirements
 - Python 3.9+
 - Django
 - Pymysql
@@ -55,7 +55,7 @@ To run the Library Management System, follow these steps:
    pip install -r requirements.txt
    ```
 
-### Database Setup
+## Database Setup
 3. Please install a working MariaDB/MySQL database with a user that has permissions to operate on the chosen DB.
 4. Add your IP to the allowed hosts and modify the `databases` variable in the `settings.py` file to correctly connect to your database.
 
