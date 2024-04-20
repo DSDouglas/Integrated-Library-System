@@ -9,29 +9,35 @@
     <h1 align="center">Integrated Library System 
 </div>  
   
-  
-<!-- TABLE OF CONTENTS -->  
-  
-# Table of Contents:  
-- [Introduction](#introduction)  
+
+<!-- TABLE OF CONTENTS -->
+
+## Table of Contents:
+- [Introduction](#introduction)
 - [Contributors](#contributors)
 - [Installation](#installation)
-- [Usage](#usage)
 - [Database Setup](#database-setup)
-- [Functionalities](#functionalities)
-- [File Structure](#file-structure)
+- [Usage](#usage)
 
-
-  ## Introduction
+## Introduction
 
 The Library Management System is a Python-based project designed to handle various tasks related to a library, including managing books, patrons, librarians, and administrators. The system uses a MySQL database to store information.
 
+Deployed Software: [Link to Deployed Software](http://18.204.180.15:8000/)
 
-### Contributors  
+### Contributors
 - Denitri Douglas
-- Pheobe Andrews
+- Phoebe Andrews
 - Connor Nelson
 
+### Software Requirements
+- Python 3.9+
+- Django
+- Pymysql
+- Requests
+- mod_wsgi
+- httpd
+- MariaDB/MySQL
 
 ## Installation
 
@@ -49,50 +55,45 @@ To run the Library Management System, follow these steps:
    pip install -r requirements.txt
    ```
 
-## Usage
+### Database Setup
+3. Please install a working MariaDB/MySQL database with a user that has permissions to operate on the chosen DB.
+4. Add your IP to the allowed hosts and modify the `databases` variable in the `settings.py` file to correctly connect to your database.
 
-1. Run the `testing.py` file to start the Library Management System:
-
-   ```bash
-   python testing.py
-   ```
-
-2. Follow the on-screen prompts to interact with the system.
-
-## Database Setup
-
-Ensure that you have MySQL installed and set up on your machine. Modify the `data_loader.py`, and `the book.py` file with your database configuration:
-
-```python
-
-# Change these values based on your MySQL setup
-host = 'localhost'
-user = 'your_username'
-password = 'your_password'
-database = 'librarysystem'
+```bash
+python manage.py runmodwsgi --working-directory .
 ```
 
-## Functionalities
+(From the project root directory)
+- Deploy the server with:
 
-The Library Management System provides the following functionalities:
+```bash
+python manage.py runmodwsgi --log-to-terminal --startup-log --port 8000 --setup-only --server-name <server name or IP> --server-root <an empty directory>
+```
 
-- User creation 
-- User authentication (Patron, Librarian, Admin)
-- Book checkout and check-in
-- Search for books by ISBN, genre, user ID, author, publisher, or title
-- Putting books on hold
+Followed by:
 
+```bash
+<server-root directory>/apachectl start
+```
 
-## File Structure
+## Usage
 
-- `testing.py`: Main script to run the Library Management System.
-- `data_loader.py`: Handles database operations and data loading.
-- `book.py`: Defines the Book class.
-- `patron.py`: Defines the Patron class.
-- `librarian.py`: Defines the Librarian class.
-- `admin.py`: Defines the Admin class.
-- `requirements.txt`: Contains the required Python packages.
+- Home: This page features a book of the day included in the library catalogue along with descriptions. 
+- Create Account: Follow the prompts on the screen to create an account taking head of the password requirements, and username restrictions.
+- Login: Login to this page with your created username and password
+- Catalog: Once logged in you can browse the inventory by searching for books in the search field or navigating via the numeric links at the bottom or the page.
+- Reservations: place a book on hold by selecting the “place hold” button to the right of the book. You will then see the hold expiration date.
+- Check-out: Check out a book by selecting the radio to the left of the book cover and selecting check out at the bottom of the page.
+- User – Checked out books: use this page to view your checked out books, check in books, and pay fees.
+- User – Logout: Logout of your account.
 
+<!-- MARKDOWN LINKS & IMAGES  -->
+
+[contributors-shield]: https://img.shields.io/github/contributors/DSDouglas/Integrated-Library-System
+[contributors-url]: https://github.com/DSDouglas/Integrated-Library-System/graphs/contributors
+[commit-shield]: https://img.shields.io/github/last-commit/DSDouglas/Integrated-Library-System
+[pypi-shield]: https://img.shields.io/pypi/pyversions/iconsdk
+```
 
 
 <!-- MARKDOWN LINKS & IMAGES  -->  
