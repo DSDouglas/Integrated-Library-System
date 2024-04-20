@@ -12,7 +12,7 @@
 
 <!-- TABLE OF CONTENTS -->
 
-## Table of Contents:
+## Table of Contents
 - [Introduction](#introduction)
 - [Contributors](#contributors)
 - [Installation](#installation)
