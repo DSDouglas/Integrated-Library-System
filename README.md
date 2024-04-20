@@ -25,7 +25,7 @@
 
 ## Introduction
 
-The Library Management System is a Python-based project designed to handle various tasks related to a library, including managing books, patrons, librarians, and administrators. The system uses a MySQL database to store information.
+The Library Management System is a Python-based project designed to handle various tasks related to a library, including managing books, patrons, librarians, and administrators. The system uses a MySQL database to store information. This software has been deployed and can be accessed via the "Deployed Software" link in the table of contents above. 
 
 
 ## Contributors
