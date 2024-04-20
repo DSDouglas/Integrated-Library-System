@@ -21,7 +21,7 @@
 - [Installation](#installation)
 - [Database Setup](#database-setup)
 - [Usage](#usage)
-- [Deployed Software](http://18.204.180.15:8000/)
+- [Deployed Software](https://group7.teacake.dev/)
 
 ## Introduction
 
