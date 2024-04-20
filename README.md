@@ -18,12 +18,12 @@
 - [Installation](#installation)
 - [Database Setup](#database-setup)
 - [Usage](#usage)
+- [Deployed Software](http://18.204.180.15:8000/)
 
 ## Introduction
 
 The Library Management System is a Python-based project designed to handle various tasks related to a library, including managing books, patrons, librarians, and administrators. The system uses a MySQL database to store information.
 
-Deployed Software: [Link to Deployed Software](http://18.204.180.15:8000/)
 
 ## Contributors
 - Denitri Douglas
