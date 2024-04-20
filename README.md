@@ -78,14 +78,14 @@ Followed by:
 
 ## Usage
 
-- Home: This page features a book of the day included in the library catalogue along with descriptions. 
-- Create Account: Follow the prompts on the screen to create an account taking head of the password requirements, and username restrictions.
-- Login: Login to this page with your created username and password
-- Catalog: Once logged in you can browse the inventory by searching for books in the search field or navigating via the numeric links at the bottom or the page.
-- Reservations: place a book on hold by selecting the “place hold” button to the right of the book. You will then see the hold expiration date.
-- Check-out: Check out a book by selecting the radio to the left of the book cover and selecting check out at the bottom of the page.
-- User – Checked out books: use this page to view your checked out books, check in books, and pay fees.
-- User – Logout: Logout of your account.
+- **Home**: This page features a book of the day included in the library catalogue along with descriptions. 
+- **Create Account**: Follow the prompts on the screen to create an account taking head of the password requirements, and username restrictions.
+- **Login**: Login to this page with your created username and password
+- **Catalog**: Once logged in you can browse the inventory by searching for books in the search field or navigating via the numeric links at the bottom or the page.
+- **Reservations**: place a book on hold by selecting the “place hold” button to the right of the book. You will then see the hold expiration date.
+- **Check-out**: Check out a book by selecting the radio to the left of the book cover and selecting check out at the bottom of the page.
+- **User – Checked out books**: use this page to view your checked out books, check in books, and pay fees.
+- **User – Logout**: Logout of your account.
 
 <!-- MARKDOWN LINKS & IMAGES  -->
 
