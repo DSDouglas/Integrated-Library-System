@@ -96,8 +96,8 @@ Followed by:
 [contributors-shield]: https://img.shields.io/github/contributors/DSDouglas/Integrated-Library-System
 [contributors-url]: https://github.com/DSDouglas/Integrated-Library-System/graphs/contributors
 [commit-shield]: https://img.shields.io/github/last-commit/DSDouglas/Integrated-Library-System
-[pypi-shield]: https://img.shields.io/badge/Python-3.9%2B-purple
-[Database]: https://img.shields.io/badge/Database-MariaDB-darkblue
+[pypi-shield]: https://img.shields.io/badge/python-3.9%2B-purple
+[Database]: https://img.shields.io/badge/database-MariaDB-darkblue
 
 ```
 
