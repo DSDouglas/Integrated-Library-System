@@ -26,9 +26,10 @@ The Library Management System is a Python-based project designed to handle vario
 
 
 ## Contributors
+- Connor Nelson
 - Denitri Douglas
 - Phoebe Andrews
-- Connor Nelson
+
 
 ## Software Requirements
 - Python 3.9+
