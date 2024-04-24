@@ -4,6 +4,14 @@ import csv
 from patron import Patron
 from admin import Admin
 from librarian import Librarian
+import os
+import json
+
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+
+
+with open(os.path.join(BASE_DIR, "config.json")) as config_file:
+    config = json.load(config_file)
 
 
 class DataMover:
@@ -25,11 +33,12 @@ class DataMover:
         Sets the 'connection' attribute to the established connection.
         """
         try:
+            DATABASES = config.get("DATABASES", {})
             self.connection = pymysql.connect(
-                host='localhost',
-                user='root',
-                password='yourpass',
-                database='librarysystem'
+                host=DATABASES["default"]["HOST"],
+                user=DATABASES["default"]["USER"],
+                password=DATABASES["default"]["PASSWORD"],
+                database=DATABASES["default"]["NAME"],
             )
         except pymysql.MySQLError as error:
             print(f"Failed to connect to the database: {error}")
@@ -88,8 +97,7 @@ class DataMover:
                 fee_amount DECIMAL(10, 2),
                 user_id VARCHAR(255),
                 FOREIGN KEY (book_id) REFERENCES Book(book_id)
-                );"""
-
+                );""",
         ]
 
         # Execute each table creation query
@@ -109,11 +117,17 @@ class DataMover:
             table_name = instance.__class__.__name__
 
             # Get the names of the attributes (columns) of the instance without underscores
-            columns = ', '.join(column.lstrip('_') for column in instance.__dict__.keys())
+            columns = ", ".join(
+                column.lstrip("_") for column in instance.__dict__.keys()
+            )
 
             # Convert attribute values to strings for the SQL query
-            values = ', '.join(
-                f"NULL" if value is None else f"'{value}'" if isinstance(value, str) else str(value)
+            values = ", ".join(
+                (
+                    f"NULL"
+                    if value is None
+                    else f"'{value}'" if isinstance(value, str) else str(value)
+                )
                 for value in instance.__dict__.values()
             )
 
@@ -145,7 +159,7 @@ class DataMover:
         - instance: Class instance containing the failed connection information.
         """
         csv_file_path = f"{class_name}_failed_connections.csv"
-        with open(csv_file_path, mode='a', newline='') as file:
+        with open(csv_file_path, mode="a", newline="") as file:
             writer = csv.writer(file)
             writer.writerow([class_name] + list(instance.__dict__.values()))
 
@@ -169,7 +183,10 @@ class DataMover:
                 # Use a cursor to execute SQL queries
                 with self.connection.cursor() as cursor:
                     # Query the database to find the user by user_id
-                    cursor.execute(f"SELECT * FROM {role} WHERE user_id = %s AND password = %s", (user_id, password))
+                    cursor.execute(
+                        f"SELECT * FROM {role} WHERE user_id = %s AND password = %s",
+                        (user_id, password),
+                    )
                     result = cursor.fetchone()
 
                 # If a result is found, authentication is successful
@@ -184,7 +201,7 @@ class DataMover:
         # If not found in the database or connection failed, check the CSV file
         csv_file_path = f"{role}_failed_connections.csv"
         try:
-            with open(csv_file_path, mode='r') as file:
+            with open(csv_file_path, mode="r") as file:
                 reader = csv.reader(file)
                 for row in reader:
                     # Check if the row has enough elements and the username and password match
@@ -235,19 +252,23 @@ class DataMover:
             # Check the Patron_failed_connections.csv file
             csv_file_path = "Patron_failed_connections.csv"
             try:
-                with open(csv_file_path, mode='r') as file:
+                with open(csv_file_path, mode="r") as file:
                     reader = csv.reader(file)
                     for row in reader:
                         if len(row) >= 3 and row[1] == user_id:
-                            print("User ID already exists in the failed connections. Please try again.")
+                            print(
+                                "User ID already exists in the failed connections. Please try again."
+                            )
                             return
             except FileNotFoundError:
                 pass  # Continue if the file doesn't exist
 
             # If user_id not found in the failed connections, add a new row
-            with open(csv_file_path, mode='a', newline='') as file:
+            with open(csv_file_path, mode="a", newline="") as file:
                 writer = csv.writer(file)
-                writer.writerow(["Patron"] + [first_name, last_name, email, user_id, password])
+                writer.writerow(
+                    ["Patron"] + [first_name, last_name, email, user_id, password]
+                )
 
             print("Patron created successfully! (Added to failed connections)")
 
@@ -289,19 +310,23 @@ class DataMover:
             # Check the Librarian_failed_connections.csv file
             csv_file_path = "Librarian_failed_connections.csv"
             try:
-                with open(csv_file_path, mode='r') as file:
+                with open(csv_file_path, mode="r") as file:
                     reader = csv.reader(file)
                     for row in reader:
                         if len(row) >= 3 and row[1] == user_id:
-                            print("User ID already exists in the failed connections. Please try again.")
+                            print(
+                                "User ID already exists in the failed connections. Please try again."
+                            )
                             return
             except FileNotFoundError:
                 pass  # Continue if the file doesn't exist
 
             # If user_id not found in the failed connections, add a new row
-            with open(csv_file_path, mode='a', newline='') as file:
+            with open(csv_file_path, mode="a", newline="") as file:
                 writer = csv.writer(file)
-                writer.writerow(["Librarian"] + [first_name, last_name, email, user_id, password])
+                writer.writerow(
+                    ["Librarian"] + [first_name, last_name, email, user_id, password]
+                )
 
             print("Librarian created successfully! (Added to failed connections)")
 
@@ -342,19 +367,23 @@ class DataMover:
             # Check the Admin_failed_connections.csv file
             csv_file_path = "Admin_failed_connections.csv"
             try:
-                with open(csv_file_path, mode='r') as file:
+                with open(csv_file_path, mode="r") as file:
                     reader = csv.reader(file)
                     for row in reader:
                         if len(row) >= 3 and row[1] == user_id:
-                            print("User ID already exists in the failed connections. Please try again.")
+                            print(
+                                "User ID already exists in the failed connections. Please try again."
+                            )
                             return
             except FileNotFoundError:
                 pass  # Continue if the file doesn't exist
 
             # If user_id not found in the failed connections, add a new row
-            with open(csv_file_path, mode='a', newline='') as file:
+            with open(csv_file_path, mode="a", newline="") as file:
                 writer = csv.writer(file)
-                writer.writerow(["Admin"] + [first_name, last_name, email, user_id, password])
+                writer.writerow(
+                    ["Admin"] + [first_name, last_name, email, user_id, password]
+                )
 
             print("Admin created successfully! (Added to failed connections)")
 
@@ -365,7 +394,9 @@ class DataMover:
 
             with self.connection.cursor() as cursor:
                 # Get patron_id based on user_id
-                cursor.execute("SELECT patron_id FROM Patron WHERE user_id = %s", (user_id,))
+                cursor.execute(
+                    "SELECT patron_id FROM Patron WHERE user_id = %s", (user_id,)
+                )
                 result = cursor.fetchone()
 
                 if result:
@@ -378,13 +409,19 @@ class DataMover:
                     if len(books) >= 4:
                         print(
                             "Sorry, you have reached the checkout limit (4 books). Please return some books before "
-                            "checking out more.")
+                            "checking out more."
+                        )
                     if any(book[12] for book in books):
-                        print("Sorry, you have outstanding fees. Please pay your fees before checking out more books.")
-                    if any(book[10] and datetime.date.today() > book[10] for book in books):
+                        print(
+                            "Sorry, you have outstanding fees. Please pay your fees before checking out more books."
+                        )
+                    if any(
+                        book[10] and datetime.date.today() > book[10] for book in books
+                    ):
                         print(
                             "Sorry, you have overdue books. Please return overdue books and pay fees before checking "
-                            "out new books.")
+                            "out new books."
+                        )
                     else:
                         # Proceed with the checkout process
                         # Update the Book entry in the database
@@ -400,12 +437,16 @@ class DataMover:
                         checkout_date = datetime.date.today()
                         due_date = checkout_date + datetime.timedelta(days=7)
 
-                        cursor.execute(update_query, (patron_id, checkout_date, due_date, isbn))
+                        cursor.execute(
+                            update_query, (patron_id, checkout_date, due_date, isbn)
+                        )
 
                         # Calculate and update fees
                         book = self.search_isbn(isbn)
                         if book:
-                            self.calculate_fee(book[0])  # Assuming search_isbn returns a single book
+                            self.calculate_fee(
+                                book[0]
+                            )  # Assuming search_isbn returns a single book
 
                         print("Book checked out successfully!")
 
@@ -426,10 +467,13 @@ class DataMover:
 
             with self.connection.cursor() as cursor:
                 # Retrieve book information
-                cursor.execute("""
+                cursor.execute(
+                    """
                     SELECT * FROM Book
                     WHERE isbn = %s AND patron_id = (SELECT patron_id FROM Patron WHERE user_id = %s)
-                """, (isbn, user_id))
+                """,
+                    (isbn, user_id),
+                )
                 book = cursor.fetchone()
 
                 if book:
@@ -482,12 +526,20 @@ class DataMover:
 
             if books:
                 print("\nFound books with ISBN {}:\n".format(isbn))
-                print("{:<8} | {:<25} | {:<20} | {:<15} | {}".format("Book ID", "Title", "Author", "ISBN", "Status"))
+                print(
+                    "{:<8} | {:<25} | {:<20} | {:<15} | {}".format(
+                        "Book ID", "Title", "Author", "ISBN", "Status"
+                    )
+                )
                 print("-" * 80)
 
                 for book in books:
                     status = "Checked Out" if book[10] else "Available"
-                    print("{:<8} | {:<25} | {:<20} | {:<15} | {}".format(book[0], book[1], book[2], book[6], status))
+                    print(
+                        "{:<8} | {:<25} | {:<20} | {:<15} | {}".format(
+                            book[0], book[1], book[2], book[6], status
+                        )
+                    )
 
                 return books
             else:
@@ -521,12 +573,20 @@ class DataMover:
 
             if books:
                 print("\nFound books with genre {}:\n".format(genre))
-                print("{:<8} | {:<25} | {:<20} | {:<15} | {}".format("Book ID", "Title", "Author", "ISBN", "Status"))
+                print(
+                    "{:<8} | {:<25} | {:<20} | {:<15} | {}".format(
+                        "Book ID", "Title", "Author", "ISBN", "Status"
+                    )
+                )
                 print("-" * 80)
 
                 for book in books:
                     status = "Checked Out" if book[10] else "Available"
-                    print("{:<8} | {:<25} | {:<20} | {:<15} | {}".format(book[0], book[1], book[2], book[6], status))
+                    print(
+                        "{:<8} | {:<25} | {:<20} | {:<15} | {}".format(
+                            book[0], book[1], book[2], book[6], status
+                        )
+                    )
 
                 return books
             else:
@@ -561,10 +621,13 @@ class DataMover:
                     fee_amount = days_overdue * 0.5  # 50 cents per day overdue
 
                     # Check if there's an existing fee record for this book and user
-                    cursor.execute("""
+                    cursor.execute(
+                        """
                         SELECT fee_id FROM Fee
                         WHERE book_id = %s AND user_id = %s
-                    """, (book[0], book[7]))
+                    """,
+                        (book[0], book[7]),
+                    )
                     existing_fee_id = cursor.fetchone()
 
                     if existing_fee_id:
@@ -585,10 +648,13 @@ class DataMover:
 
                 else:
                     # If book is not overdue, ensure there's no fee record
-                    cursor.execute("""
+                    cursor.execute(
+                        """
                         DELETE FROM Fee
                         WHERE book_id = %s AND user_id = %s
-                    """, (book[0], book[7]))
+                    """,
+                        (book[0], book[7]),
+                    )
 
         finally:
             self.connection.commit()
@@ -608,33 +674,62 @@ class DataMover:
                 self.connect_to_database()
 
             with self.connection.cursor() as cursor:
-                cursor.execute("SELECT patron_id FROM Patron WHERE user_id = %s", (user_id,))
+                cursor.execute(
+                    "SELECT patron_id FROM Patron WHERE user_id = %s", (user_id,)
+                )
                 result = cursor.fetchone()
 
                 if result:
                     patron_id = result[0]
-                    cursor.execute("SELECT * FROM Book WHERE patron_id = %s", (patron_id,))
+                    cursor.execute(
+                        "SELECT * FROM Book WHERE patron_id = %s", (patron_id,)
+                    )
                     books = cursor.fetchall()
 
                     if books:
-                        print("\nFound books for user with user_id {}:\n".format(user_id))
-                        print("{:<8} | {:<25} | {:<20} | {:<15} | {:<15} | {}".format(
-                            "Book ID", "Title", "Author", "ISBN", "Publisher", "Fee Amount"))
+                        print(
+                            "\nFound books for user with user_id {}:\n".format(user_id)
+                        )
+                        print(
+                            "{:<8} | {:<25} | {:<20} | {:<15} | {:<15} | {}".format(
+                                "Book ID",
+                                "Title",
+                                "Author",
+                                "ISBN",
+                                "Publisher",
+                                "Fee Amount",
+                            )
+                        )
                         print("-" * 100)
 
                         for book in books:
                             self.calculate_fee(book)
-                            cursor.execute("SELECT fee_amount FROM Fee WHERE book_id = %s AND user_id = %s",
-                                           (book[0], patron_id))
-                            fee_amount = cursor.fetchone()[0] if cursor.rowcount > 0 else 0.0
+                            cursor.execute(
+                                "SELECT fee_amount FROM Fee WHERE book_id = %s AND user_id = %s",
+                                (book[0], patron_id),
+                            )
+                            fee_amount = (
+                                cursor.fetchone()[0] if cursor.rowcount > 0 else 0.0
+                            )
                             fee_amount_str = "${:.2f}".format(fee_amount)
                             status = "Available" if not book[10] else "Checked Out"
-                            print("{:<8} | {:<25} | {:<20} | {:<15} | {:<15} | {}".format(
-                                book[0], book[1], book[2], book[6], book[4], fee_amount_str, status))
+                            print(
+                                "{:<8} | {:<25} | {:<20} | {:<15} | {:<15} | {}".format(
+                                    book[0],
+                                    book[1],
+                                    book[2],
+                                    book[6],
+                                    book[4],
+                                    fee_amount_str,
+                                    status,
+                                )
+                            )
 
                         return books
                     else:
-                        print("No books found for user with user_id {}.".format(user_id))
+                        print(
+                            "No books found for user with user_id {}.".format(user_id)
+                        )
                         return []
 
                 else:
@@ -667,13 +762,20 @@ class DataMover:
 
             if books:
                 print("\nFound books by author {}:\n".format(author))
-                print("{:<8} | {:<25} | {:<20} | {:<15} | {}".format("Book ID", "Title", "Author", "ISBN", "Publisher"))
+                print(
+                    "{:<8} | {:<25} | {:<20} | {:<15} | {}".format(
+                        "Book ID", "Title", "Author", "ISBN", "Publisher"
+                    )
+                )
                 print("-" * 80)
 
                 for book in books:
                     status = "Checked Out" if book[10] else "Available"
-                    print("{:<8} | {:<25} | {:<20} | {:<15} | {}".format(book[0], book[1], book[2], book[6], book[4],
-                                                                         status))
+                    print(
+                        "{:<8} | {:<25} | {:<20} | {:<15} | {}".format(
+                            book[0], book[1], book[2], book[6], book[4], status
+                        )
+                    )
 
                 return books
             else:
@@ -706,12 +808,20 @@ class DataMover:
 
             if books:
                 print("\nFound books published by {}:\n".format(publisher))
-                print("{:<8} | {:<25} | {:<20} | {:<15} | {}".format("Book ID", "Title", "Author", "ISBN", "Status"))
+                print(
+                    "{:<8} | {:<25} | {:<20} | {:<15} | {}".format(
+                        "Book ID", "Title", "Author", "ISBN", "Status"
+                    )
+                )
                 print("-" * 80)
 
                 for book in books:
                     status = "Checked Out" if book[10] else "Available"
-                    print("{:<8} | {:<25} | {:<20} | {:<15} | {}".format(book[0], book[1], book[2], book[6], status))
+                    print(
+                        "{:<8} | {:<25} | {:<20} | {:<15} | {}".format(
+                            book[0], book[1], book[2], book[6], status
+                        )
+                    )
 
                 return books
             else:
@@ -744,12 +854,20 @@ class DataMover:
 
             if books:
                 print("\nFound books with title {}:\n".format(title))
-                print("{:<8} | {:<25} | {:<20} | {:<15} | {}".format("Book ID", "Title", "Author", "ISBN", "Status"))
+                print(
+                    "{:<8} | {:<25} | {:<20} | {:<15} | {}".format(
+                        "Book ID", "Title", "Author", "ISBN", "Status"
+                    )
+                )
                 print("-" * 80)
 
                 for book in books:
                     status = "Checked Out" if book[10] else "Available"
-                    print("{:<8} | {:<25} | {:<20} | {:<15} | {}".format(book[0], book[1], book[2], book[6], status))
+                    print(
+                        "{:<8} | {:<25} | {:<20} | {:<15} | {}".format(
+                            book[0], book[1], book[2], book[6], status
+                        )
+                    )
 
                 return books
             else:
@@ -777,7 +895,9 @@ class DataMover:
 
             with self.connection.cursor() as cursor:
                 # Get patron_id based on user_id
-                cursor.execute("SELECT patron_id FROM Patron WHERE user_id = %s", (user_id,))
+                cursor.execute(
+                    "SELECT patron_id FROM Patron WHERE user_id = %s", (user_id,)
+                )
                 result = cursor.fetchone()
 
                 if result:
@@ -858,18 +978,30 @@ class DataMover:
 
             with self.connection.cursor() as cursor:
 
-                cursor.execute("SELECT patron_id FROM Patron WHERE user_id = %s", (user_id,))
+                cursor.execute(
+                    "SELECT patron_id FROM Patron WHERE user_id = %s", (user_id,)
+                )
                 result = cursor.fetchone()
                 # Check if the fee record exists for the given book_id and user_id
-                cursor.execute("SELECT * FROM Fee WHERE book_id = %s AND user_id = %s", (book_id, result))
+                cursor.execute(
+                    "SELECT * FROM Fee WHERE book_id = %s AND user_id = %s",
+                    (book_id, result),
+                )
                 fee_record = cursor.fetchone()
 
                 if fee_record:
                     # Delete the fee record
-                    cursor.execute("DELETE FROM Fee WHERE book_id = %s AND user_id = %s", (book_id, result))
+                    cursor.execute(
+                        "DELETE FROM Fee WHERE book_id = %s AND user_id = %s",
+                        (book_id, result),
+                    )
                     print("Overdue fees for book {} paid successfully.".format(book_id))
                 else:
-                    print("No overdue fees found for book {} and user {}.".format(book_id, user_id))
+                    print(
+                        "No overdue fees found for book {} and user {}.".format(
+                            book_id, user_id
+                        )
+                    )
 
         except pymysql.MySQLError as error:
             print("Failed to pay overdue fees: {}".format(error))
@@ -893,19 +1025,28 @@ class DataMover:
                 self.connect_to_database()
 
             with self.connection.cursor() as cursor:
-                cursor.execute("SELECT patron_id FROM Patron WHERE user_id = %s", (user_id,))
+                cursor.execute(
+                    "SELECT patron_id FROM Patron WHERE user_id = %s", (user_id,)
+                )
                 result = cursor.fetchone()
                 cursor.execute("SELECT * FROM Fee WHERE user_id = %s", (result,))
                 fees = cursor.fetchall()
 
                 if fees:
                     print("\nFound fees for user with user_id {}:\n".format(user_id))
-                    print("{:<8} | {:<8} | {:<10} | {}".format("Fee ID", "Book ID", "Amount", "Patron ID"))
+                    print(
+                        "{:<8} | {:<8} | {:<10} | {}".format(
+                            "Fee ID", "Book ID", "Amount", "Patron ID"
+                        )
+                    )
                     print("-" * 50)
 
                     for fee in fees:
-                        print("{:<8} | {:<8} | {:<10} | {}".format(
-                            fee[0], fee[1], "${:.2f}".format(fee[2]), fee[3]))
+                        print(
+                            "{:<8} | {:<8} | {:<10} | {}".format(
+                                fee[0], fee[1], "${:.2f}".format(fee[2]), fee[3]
+                            )
+                        )
 
                     return fees
                 else:
