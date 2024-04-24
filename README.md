@@ -20,12 +20,17 @@
 - [Contributors](#contributors)
 - [Installation](#installation)
 - [Database Setup](#database-setup)
+- [Install Dependencies](#dependencies)
+- [Launch Software](#launch)
+- [Deploy](#deploy)
 - [Usage](#usage)
 - [Deployed Software](https://group7.teacake.dev/)
 
 ## Introduction
 
 The Library Management System is a Python-based project designed to handle various tasks related to a library, including managing books, patrons, librarians, and administrators. The system uses a MySQL database to store information. This software has been deployed and can be accessed via the "Deployed Software" link in the table of contents above. 
+
+The installation guide expects a Linux OS and explains the necessary software and tools needed to start locally hosting the Integrated Library System. It also covers installing a MariaDB or MySQL database to pair with the management system. 
 
 
 ## Contributors
@@ -39,9 +44,9 @@ The Library Management System is a Python-based project designed to handle vario
 - Django
 - Pymysql
 - Requests
-- mod_wsgi
-- httpd
 - MariaDB/MySQL
+- Nginx
+- Gunicorn
 
 ## Installation
 
@@ -51,34 +56,51 @@ To run the Library Management System, follow these steps:
 
    ```bash
    git clone https://github.com/your-username/library-management-system.git
-   ```
-
-2. Install the required dependencies:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
+   ```  
 
 ## Database Setup
-3. Please install a working MariaDB/MySQL database with a user that has permissions to operate on the chosen DB.
-4. Add your IP to the allowed hosts and modify the `databases` variable in the `settings.py` file to correctly connect to your database.
+2. Please install a working MariaDB/MySQL database with a user that has permissions to operate on the chosen DB. 
 
-```bash
-python manage.py runmodwsgi --working-directory .
+This can be done using the MariaDB or MySQL secure installation script provided with the package. 
+
+If you wish to set up an Amazon RDS DB instance for your Integrated Library System, the official Amazon User Guide can be found at: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Tutorials.WebServerDB.CreateDBInstance.html  
+
+## Dependencies
+
+3. Install Nginx
+  ```bash
+  “sudo yum install nginx python3” (or your OS’s equivalent) 
+  ```
+4. Install software requirements
+  ```bash
+   pip install -r requirements.txt
+  ```
+6.  Add your IP to the allowed hosts and modify the databases variable in config.json file to correctly connect to your database. 
+
+## Launch
+
+To run locally: (From the project root directory) 
+  ```bash
+  “python manage.py runserver <ip:port>”
+  ```
+
+## Deploy
+
+Follow the Nginx and gunicorn quickstart documentation to create a gunicorn.service and gunicorn.socket to serve your app to the nginx service https://docs.gunicorn.org/en/latest/deploy.html  
+ 
+
+Modify the nginx config to support TLS and provide it with the certificate files to enable https and set the proper hostname. 
+
+Followed by: 
+
+```base
+“systemctl start gunicorn.service”
 ```
 
-(From the project root directory)
-- Deploy the server with:
-
 ```bash
-python manage.py runmodwsgi --log-to-terminal --startup-log --port 8000 --setup-only --server-name <server name or IP> --server-root <an empty directory>
+“systemctl start nginx”
 ```
-
-Followed by:
-
-```bash
-<server-root directory>/apachectl start
-```
+ 
 
 ## Usage
 
