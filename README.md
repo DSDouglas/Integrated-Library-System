@@ -24,11 +24,11 @@
 - [Launch Software](#launch)
 - [Deploy](#deploy)
 - [Usage](#usage)
-- [Deployed Software](https://group7.teacake.dev/)
+
 
 ## Introduction
 
-The Library Management System is a Python-based project designed to handle various tasks related to a library, including managing books, patrons, librarians, and administrators. The system uses a MySQL database to store information. This software has been deployed and can be accessed via the "Deployed Software" link in the table of contents above. 
+The Library Management System is a Python-based project designed to handle various tasks related to a library, including managing books, patrons, librarians, and administrators. The system uses a MySQL database to store information. 
 
 The installation guide expects a Linux OS and explains the necessary software and tools needed to start locally hosting the Integrated Library System. It also covers installing a MariaDB or MySQL database to pair with the management system. 
 
